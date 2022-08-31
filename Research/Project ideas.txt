@@ -1,0 +1,24 @@
+--IDEAS FOR PROJECT--
+
+Delivery Service:
+	- world: 
+		- randomly generated map (streets etc)
+		- locations where orders have been made
+		- recharge stations
+	- agents:
+		- autonomous electric delivery vehicle
+	- goal: 
+		- deliver packages to locations where orders have been made 
+		- plan for maximum packages delivered or minimum time, etc
+	- misc.
+		- possibly have multiple delivery vehicles with the constraint that they cannot collide
+
+Trip Planner:
+	- world:
+		- randomly generated map
+		- start point and target destination
+		- transport locations (busstops, bike racks, etc.)
+	- agents:
+		- human initially located at start point (???)
+	- goal:
+		- find the route with shortest distance or least cost in terms of money
