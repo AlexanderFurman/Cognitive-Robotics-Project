@@ -40,6 +40,8 @@ Automized waitering service:
 		- take orders from guests, relay info to the kitchen, wait, return to guest with the food. Have robots be as 'busy' as possible (minimum idle time)
 	- method:
 		- classical planning with PDDL
+	- misc.:
+		- could do with one robot to simplify
 		
 Automized ride-sharing service
 	-world:
