@@ -43,7 +43,7 @@ Automized waitering service:
 	- misc.:
 		- could do with one robot to simplify
 		
-Automized ride-sharing service
+Automized ride-sharing service:
 	-world:
 		- customers
 		- locations 
@@ -53,6 +53,11 @@ Automized ride-sharing service
 		- pick up and drop off guests in a way which minimizes battery usage or time in car
 	- method:
 		- temporal planning
-		
-		
-		
+
+Puzzle solver:
+	-world:
+		- empty spaces and tiles (e.g. 8 spaces and 7 tiles, meaning one empty space at any given time)
+	-agents:
+		- robot
+	-goal:
+		- order the tiles in the correct manner, with some constraint
