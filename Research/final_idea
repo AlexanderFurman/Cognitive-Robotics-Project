@@ -1,0 +1,14 @@
+Colonizing Mars presents many challenges, firstly surveying the landscape to ensure safe living conditions for humans.
+Billions are being pumped into this endevour, and it is one of the best bets we have to preserving the human race following a catastrophic event on Earth.
+We decided therefore to create a classical planning algorithm for sample collection with a mars rover.
+
+The idea:
+A group of Mars colonizers have crash-landed onto Mars after one of the engines of their rocket misfired. Realizing they would not survive the harsh conditions,
+the colonizers decide to take shelter in a nearby cave. They make an SOS call to the colony and it is luckily heard.
+The colony's emergency brigade quickly dispatches an autonomous fleet of rovers to collect the stranded colonizers.
+
+The challenge:
+The fleet of rovers have the following constraints:
+	- They have limited battery resources - although they can recharge at designated charging stations
+	- They cannot occupy the same positions at the same time
+	- The colonizers may be badly wounded, therefore the fleet needs to get the colonizers home as soon as possible
