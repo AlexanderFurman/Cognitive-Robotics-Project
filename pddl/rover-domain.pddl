@@ -20,12 +20,13 @@
     (:predicates ;todo: define predicates here
 
         (rover ?r - rover)
+        (cargo ?c - cargo)
         (location ?l - location)
         (at ?obj - locatable ?loc - location)
         (inside-rover ?c - cargo ?r - rover)
         (outside-rover ?c -cargo)
         (empty ?r - rover)
-        (can-move ?r - rover ?l1 ?l2 - location)
+        (path ?l1 ?l2 - location)
         (rescued ?c)
         ; although any cargo listed as rescued, we can specify ppl to be rescued in problem file
 
@@ -39,7 +40,7 @@
         (battery-level ?r - rover)
         (mission-duration)
         (time-to-traverse ?l1 ?l2 - location)
-        (people-rescued)
+        ; (people-rescued)
 
     )
 
@@ -61,9 +62,9 @@
                 (at start (rover ?r))
                 (at start (location ?fromloc))
                 (at start (location ?toloc))
-                (over all (can-move ?r ?fromloc ?toloc))
+                (over all (path ?fromloc ?toloc))
                 (at start (at ?r ?fromloc))
-                (at end (> (battery-level ?r) 10))
+                (at end (> (battery-level ?r) 0))
                 (at end (< (mission-duration) 240))
             )
 
@@ -76,6 +77,7 @@
 
                 (forall (?c - cargo)
                     (when (and 
+                        (at start (cargo ?c))
                         (at start (at ?c ?fromloc))
                         (at start (inside-rover ?c ?r))
                         )
@@ -101,6 +103,9 @@
         :duration (= ?duration 1)
 
         :condition (and 
+            (at start (cargo ?c))
+            (at start (rover ?r))
+            (at start (location ?l))
             (at start (empty ?r))
             (at start (outside-rover ?c))
             (at start (at ?c ?l))
@@ -126,6 +131,9 @@
         :duration (= ?duration 1)
 
         :condition (and 
+            (at start (cargo ?c))
+            (at start (rover ?r))
+            (at start (location ?l))
             (at start (not (empty ?r)))
             (at start (inside-rover ?c ?r))
             (at start (at ?c ?l))

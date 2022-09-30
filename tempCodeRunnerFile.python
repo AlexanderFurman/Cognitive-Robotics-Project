@@ -1,0 +1,7 @@
+class MapGenerator:
+    def __init__(self, width=type(int), perpendicular_time_taken = type(float), diagonal_time_taken = type(float), ):
+        self.width = width
+        self.graph = [element for element in range(width**2)]
+
+generator = MapGenerator(2, 3, 3)
+print(generator.graph)
