@@ -1,24 +1,18 @@
 ;Header and description
 
-(define (domain rover_environment)
+(define (domain rover-environment)
 
     ;remove requirements that are not needed
-    (:requirements :strips :fluents :durative-actions :timed-initial-literals :typing :conditional-effects :negative-preconditions :duration-inequalities :equality)
+    (:requirements :strips :fluents :typing :conditional-effects :negative-preconditions :equality)
 
-    (:types ;todo: enumerate types and their hierarchy here, e.g. car truck bus - vehicle
-
+    (:types 
         location locatable - object
-        charge_station base cave - location
+        ; charge_station base cave - location
         rover cargo - locatable
         person supply - cargo
-
     )
 
-    ; un-comment following line if constants are needed
-    ;(:constants )
-
-    (:predicates ;todo: define predicates here
-
+    (:predicates
         (rover ?r - rover)
         (cargo ?c - cargo)
         (location ?l - location)
@@ -27,24 +21,23 @@
         (outside-rover ?c -cargo)
         (empty ?r - rover)
         (path ?l1 ?l2 - location)
-        (rescued ?c)
-        ; although any cargo listed as rescued, we can specify ppl to be rescued in problem file
+        (is-cave ?l - location)
+        (is-charge-station ?l - location)
+        (is-base ?l - location)
 
     )
 
 
-    (:functions ;todo: define numeric functions here
-
-        ; (battery-capacity ?r - rover)
-        ; (battery-consumption-rate)
+    (:functions 
+        (battery-capacity ?r - rover)
+        (battery-consumption-rate)
         (battery-level ?r - rover)
         (mission-duration)
-        (time-to-traverse ?l1 ?l2 - location)
-        ; (people-rescued)
+        (time-to-traverse ?l1 - location ?l2 - location)
 
     )
 
-    (:durative-action move
+    (:action move
     ; TODO: change all variable changes to be parametric - not just "change by 10", etc.
     ; TODO: change variable changes based off of if cargo is present in the rover
         :parameters 
@@ -54,45 +47,43 @@
             ?toloc - location
         )
         ; duration given in minutes
-        :duration 
-        (= ?duration (time-to-traverse ?fromloc ?toloc))
+        ; :duration 
+        ; (= ?duration (time-to-traverse ?fromloc ?toloc))
 
-        :condition
+        :precondition
             (and 
-                (at start (rover ?r))
-                (at start (location ?fromloc))
-                (at start (location ?toloc))
-                (over all (path ?fromloc ?toloc))
-                (at start (at ?r ?fromloc))
-                (at end (> (battery-level ?r) 0))
-                (at end (< (mission-duration) 240))
+                (rover ?r)
+                (location ?fromloc)
+                (location ?toloc)
+                (path ?fromloc ?toloc)
+                (at ?r ?fromloc)
+                (> (battery-level ?r) 10)
+                (< (mission-duration) 240)
             )
 
         :effect
-            (and
-                (at start (decrease (battery-level ?r) 10))
-                (at start (not (at ?r ?fromloc)))
-                (at end (at ?r ?toloc))
-                (at end (increase (mission-duration) ?duration))
+            (and 
+                (decrease (battery-level ?r) 10)
+                (not (at ?r ?fromloc))
+                (at ?r ?toloc)
+                (increase (mission-duration) (time-to-traverse ?fromloc ?toloc))
 
                 (forall (?c - cargo)
                     (when (and 
-                        (at start (cargo ?c))
-                        (at start (at ?c ?fromloc))
-                        (at start (inside-rover ?c ?r))
+                        (cargo ?c)
+                        (at ?c ?fromloc)
+                        (inside-rover ?c ?r)
                         )
                         (and
-                        (at start (not (at ?c ?fromloc)))
-                        (at end (at ?c ?toloc))
+                        (not (at ?c ?fromloc))
+                        (at ?c ?toloc)
                         )
                     )
                 )
             )
-
-
     )
 
-    (:durative-action load-rover
+    (:action load-rover
         :parameters 
         (
             ?r - rover
@@ -100,55 +91,48 @@
             ?l - location
         )
 
-        :duration (= ?duration 1)
-
-        :condition (and 
-            (at start (cargo ?c))
-            (at start (rover ?r))
-            (at start (location ?l))
-            (at start (empty ?r))
-            (at start (outside-rover ?c))
-            (at start (at ?c ?l))
-            (at start (at ?r ?l))
-            (at end (< (mission-duration) 240))
+        :precondition (and 
+            (cargo ?c)
+            (rover ?r)
+            (location ?l)
+            (empty ?r)
+            (outside-rover ?c)
+            (at ?c ?l)
+            (at ?r ?l)
+            (< (mission-duration) 240)
         )
 
-        :effect (and
-            (at end (not (empty ?r)))
-            (at end (not (outside-rover ?c)))
-            (at end (inside-rover ?c ?r))
-            (at end (increase(mission-duration) ?duration))
+        :effect (and 
+            (not (empty ?r))
+            (not (outside-rover ?c))
+            (inside-rover ?c ?r)
+            (increase(mission-duration) 1)
         )
     )
 
-    (:durative-action unload-rover
+    (:action unload-rover
         :parameters (
             ?r - rover
             ?c - cargo
             ?l - location
         )
 
-        :duration (= ?duration 1)
-
-        :condition (and 
-            (at start (cargo ?c))
-            (at start (rover ?r))
-            (at start (location ?l))
-            (at start (not (empty ?r)))
-            (at start (inside-rover ?c ?r))
-            (at start (at ?c ?l))
-            (at start (at ?r ?l))
-            (at end (< (mission-duration) 240))
+        :precondition (and 
+            (cargo ?c)
+            (rover ?r)
+            (location ?l)
+            (not (empty ?r))
+            (inside-rover ?c ?r)
+            (at ?c ?l)
+            (at ?r ?l)
+            (< (mission-duration) 240)
         )
 
         :effect (and 
-            (at end (empty ?r))
-            (at end (not (inside-rover ?c ?r)))
-            (at end (outside-rover ?c))
-            (at end (increase (mission-duration) ?duration))
+            (empty ?r)
+            (not (inside-rover ?c ?r))
+            (outside-rover ?c)
+            (increase (mission-duration) 1)
         )
     )
-    
-
-
 )

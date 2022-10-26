@@ -225,11 +225,8 @@ class PDDL_ProblemGenerator:
         
         
  
-
-        
-
-
-generator = PDDL_ProblemGenerator('rover-environment', 3, 10, 1, 1, [0,0], [1,1], 240)
-print(generator.graph)
-generator.create_pddl_file()
+if __name__=='__main__':
+    generator = PDDL_ProblemGenerator('rover-environment', 2, 10, 1, 1, [0,0], [1,1], 240)
+    print(generator.graph)
+    generator.create_pddl_file()
 
