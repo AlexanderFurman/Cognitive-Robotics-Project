@@ -5,12 +5,13 @@ from joint_state import JointState
 from matplotlib.animation import FuncAnimation
 from matplotlib.animation import PillowWriter
 import os
+from math import pi
 
 class Plotter:
     def __init__(self, robot):
         self.robot = robot
         self.fig, self.ax = plt.subplots()
-        self.frame_data = []
+        self.frames= []
         self.ln, = self.ax.plot([],[],'ro')
 
 
@@ -34,7 +35,7 @@ class Plotter:
         return points
 
     def generate_config_waypoints(self,initial_joint_states, final_joint_states, n_frames, traj_type):
-        waypoints = np.array([])
+        waypoints = np.array(initial_joint_states)
         a_i = np.array([])
         a_f = np.array([])
         for joint_state_i, joint_state_f in zip(initial_joint_states, final_joint_states):
@@ -42,15 +43,16 @@ class Plotter:
             a_f = np.append(a_f, joint_state_f.value)
 
         if traj_type == 'linear':
-            for i in range(n_frames): 
+            for i in range(1,n_frames): 
                 joint_states = np.array([])
 
                 a_t = a_i + ((a_f-a_i)/(n_frames-1))*i
 
                 for j in range(self.robot.n_dof):
                     joint_states = np.append(joint_states, JointState(a_t[j]))
-
-                waypoints = np.append(waypoints, joint_states)
+                print("waypoints = ", waypoints)
+                print("joint_states = ", joint_states)
+                waypoints = np.vstack([waypoints, joint_states])
 
         return waypoints
         
@@ -71,10 +73,17 @@ class Plotter:
 
         ani.save("plots/lin_animation%i.gif" %i, dpi=300, writer=PillowWriter(fps=framerate))
 
+    def animate(self):
+        for frame in self.frames:
+            
+
+
 if __name__ == '__main__':
     robot = Robot(3)
     plotter = Plotter(robot)
 
-    plotter.generate_trajectory([],[])
+    joint_state_i, joint_state_f = [JointState() for _ in range(3)],[JointState(pi) for _ in range(3)]
+
+    plotter.generate_trajectory(joint_state_i, joint_state_f)
 
 

@@ -9,10 +9,11 @@ class Robot:
         self.base = base
         self.joint_values = [JointState() for _ in range(n_dof)]
         self.joint_positions = [np.array([i*self.link_length, 0]) for i in range(self.n_dof)]
+        self.gripper_position = np.array([(self.n_dof+1)*self.link_length, 0])
 
     def rotation_mat_2D(self, theta):
-        mat = np.array[[cos(theta), -sin(theta)],
-                       [sin(theta), cos(theta)]]
+        mat = np.array([[cos(theta), -sin(theta)],
+                       [sin(theta), cos(theta)]])
         return mat
 
     def set_joint_values(self, angles):
@@ -21,7 +22,9 @@ class Robot:
 
     def forward_kinematics(self):
         self.joint_positions = [np.array([i*self.link_length, 0]) for i in range(self.n_dof)]
-        R = self.mat(self.joint_values[0].value)
+        self.gripper_position = np.array([(self.n_dof+1)*self.link_length, 0])
+        R = self.rotation_mat_2D(self.joint_values[0].value)
         for i in range(1,self.n_dof):
             self.joint_positions[i] = R.dot(self.joint_positions[i])
             R = np.dot(R,self.rotation_mat_2D(self.joint_values[i].value))
+        self.gripper_position = R.dot(self.gripper_position)
