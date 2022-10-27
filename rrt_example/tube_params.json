@@ -1,0 +1,50 @@
+{
+    "tube":[
+
+    {"id:":1, "length":431e-3, "length_curved":103e-3, "diameter_inner":0.7e-3, "diameter_outer":1.1e-3, "stiffness":6.43e+10, "torsional_stiffness":2.50e+10,
+    "x_curvature":21.3, "y_curvature":0},
+
+    {"id:":2, "length":332e-3, "length_curved":113e-3, "diameter_inner":1.4e-3, "diameter_outer":1.8e-3, "stiffness":5.25e+10, "torsional_stiffness":2.14e+10,
+    "x_curvature":13.108, "y_curvature":0},
+
+    {"id:":3, "length":174e-3, "length_curved":134e-3, "diameter_inner":2e-3, "diameter_outer":2.2e-3, "stiffness":4.71e+10, "torsional_stiffness":2.97e+10,
+    "x_curvature":3.5, "y_curvature":0}
+
+
+    ],
+
+    "tube state initial":[
+        {"id":1, "angle":0, "length":0.1},
+        {"id":2, "angle":0, "length":0.05},
+        {"id":3, "angle":0, "length":0.019}
+    ],
+
+    "tube state final":[
+        {"id":1, "angle":180, "length":0.015},
+        {"id":2, "angle":180, "length":0.01},
+        {"id":3, "angle":0, "length":0.019}
+    ],
+
+    "initial conditions":[
+        {"id":1, "angle":0, "length":-431e-3},
+        {"id":2, "angle":0, "length":-331.9e-3},
+        {"id":3, "angle":180, "length":0.01}
+    ],
+
+    "initial joint positions": [-431e-3, -331.9e-3, 0],
+
+    "initial joint positions_f": [-0.2858, -0.2025, 0, 0],
+
+    "uz_0": [0.0, 0.0, 0.0],
+    
+    "u1_xy_0": [[0.0], [0.0]],
+
+    "force": [0,0,0],
+
+    "tolerance": 0.01,
+
+    "method": 1
+
+
+
+}
