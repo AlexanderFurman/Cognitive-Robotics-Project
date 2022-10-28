@@ -15,7 +15,7 @@ import numpy as np
 if __name__ == '__main__':
     robot = Robot(3)
     # obstacle = Obstacle(3, np.array([15,15]))
-    obstacle = Obstacle(1, np.array([10,5]))
+    obstacle = Obstacle(1, np.array([5,5]))
     target = np.array([8,8])
     environment = Environment(robot, [obstacle], [target])
     # robot.forward_kinematics()

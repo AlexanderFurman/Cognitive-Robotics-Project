@@ -105,6 +105,7 @@ class Plotter:
 
         self.robot.forward_kinematics()
         self.ax.plot(*self.generate_cartesian_points(), marker = 'o')
+        self.ax.plot(self.robot.gripper_position[0], self.robot.gripper_position[1], marker='o', color='purple')
         self.ax.set_xbound(-self.robot.n_dof*self.robot.link_length,self.robot.n_dof*self.robot.link_length)
         self.ax.set_ybound(0,self.robot.n_dof*self.robot.link_length)
         sliders = [None for _ in range(self.robot.n_dof)]
@@ -129,6 +130,8 @@ class Plotter:
                 self.ax.plot(*self.generate_cartesian_points(), marker='o', color = 'r', lw=4)
             else:
                 self.ax.plot(*self.generate_cartesian_points(), marker='o', color = 'b', lw=4)
+
+            self.ax.plot(self.robot.gripper_position[0], self.robot.gripper_position[1], marker='o', color='purple')
             self.ax.set_xbound(-self.robot.n_dof*self.robot.link_length,self.robot.n_dof*self.robot.link_length)
             self.ax.set_ybound(0,self.robot.n_dof*self.robot.link_length)
             self.fig.canvas.draw_idle()
