@@ -13,11 +13,15 @@ from Environment.environment import Environment
 import numpy as np
 
 if __name__ == '__main__':
-    robot = Robot(3)
+    robot = Robot(4)
     # obstacle = Obstacle(3, np.array([15,15]))
-    obstacle = Obstacle(1, np.array([5,5]))
-    target = np.array([8,8])
-    environment = Environment(robot, [obstacle], [target])
+    obstacle1 = Obstacle(1, np.array([5,5]))
+    obstacle2 = Obstacle(1, np.array([10,5]))
+    obstacle3 = Obstacle(1, np.array([20, 25]))
+    target1 = np.array([8,3])
+    target2 = np.array([5,8])
+    target3 = np.array([20,25])
+    environment = Environment(robot, [obstacle1, obstacle2, obstacle3], [target1, target2, target3])
     # robot.forward_kinematics()
     plotter = Plotter(environment)
 
