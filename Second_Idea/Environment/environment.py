@@ -1,10 +1,14 @@
 import numpy as np
 
+from Robot.joint_state import JointState
+
 class Environment:
-    def __init__(self, robot, obstacles, targets):
+    def __init__(self, robot, obstacles, targets, initial_state = None, epsilon = 0.5):
         self.robot = robot
         self.obstacles = obstacles
         self.targets = targets
+        self.initial_state = initial_state if initial_state is not None else self.robot.joint_values
+        self.epsilon = epsilon
 
     def distance(self, p1, p2):
         return np.linalg.norm(p2-p1)
@@ -42,11 +46,6 @@ class Environment:
             return False
 
     def query_robot_collision(self):
-        # for i in range(len(self.robot.joint_positions)-1):
-        #     for j in range(len(self.obstacles)):
-        #         if self.query_link_collision(self.obstacles[j].radius, self.obstacles[j].centre, self.robot.joint_positions[i], self.robot.joint_positions[i+1]):
-        #             return True
-                
         for i in range(len(self.obstacles)):
             for j in range(len(self.robot.joint_positions)-1):
                 if self.query_link_collision(self.obstacles[i].radius, self.obstacles[i].centre, self.robot.joint_positions[j], self.robot.joint_positions[j+1]):
@@ -55,6 +54,11 @@ class Environment:
             if self.query_link_collision(self.obstacles[i].radius, self.obstacles[i].centre, self.robot.joint_positions[-1], self.robot.gripper_position):
                 print(f"collision at link {self.robot.n_dof}")
                 return True
+        return False
+
+    def query_robot_at_goal(self, target):
+        if self.distance(self.robot.gripper_position, target) <= self.epsilon:
+            return True
         return False
 
 

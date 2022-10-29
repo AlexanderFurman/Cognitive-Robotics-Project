@@ -39,6 +39,11 @@ class Graph:
     def add_edge(self, node1, node2):
         self.edges.append(node1, node2)
 
+    def nearest_neighbour(self, node):
+        distances = [np.linalg.norm(node.vectorized_values() - node_i.vectorized_values()) for node_i in self.nodes]
+        min_idx = np.argmin(distances)
+        return self.nodes[min_idx]
+
     def query_node_in_graph(self, node):
         for node_i in self.nodes:
             if node_i.is_equal(node):
@@ -58,8 +63,8 @@ class Graph:
 
 
 class TreeNode(Node):
-    def __init__(self, joint_value, predecessor = None):
-        super().__init__(joint_value)
+    def __init__(self, joint_values, predecessor = None):
+        super().__init__(joint_values)
         self.predecessor = predecessor
         self.successors = []
     
@@ -89,10 +94,10 @@ class Tree(Graph):
         super().add_edge(node1, node2)
         if super().query_node_in_graph(node1):
             node1.add_successor(node2)
-            node2.add_predecessor(node1)
+            node2.set_predecessor(node1)
         else:
             node2.add_successor(node1)
-            node1.add_predecessor(node2)
+            node1.set_predecessor(node2)
 
 
         

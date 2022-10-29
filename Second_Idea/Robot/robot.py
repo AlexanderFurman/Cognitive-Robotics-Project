@@ -3,11 +3,13 @@ from math import sin, cos
 from Robot.joint_state import JointState
 
 class Robot:
-    def __init__(self, n_dof=5, link_length = 10, base = [0,0]):
+    def __init__(self, n_dof=5, link_length = 10, base = [0,0], min_joint_limit = -np.pi, max_joint_limit = np.pi):
         self.n_dof = n_dof
         self.link_length = link_length
         self.base = base
         self.joint_values = [JointState() for _ in range(n_dof)]
+        self.min_joint_limit = min_joint_limit
+        self.max_joint_limit = max_joint_limit
         self.joint_positions = [np.array([i*self.link_length, 0]) for i in range(self.n_dof)]
         self.gripper_position = np.array([(self.n_dof)*self.link_length, 0])
 
