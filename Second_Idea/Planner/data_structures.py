@@ -4,6 +4,10 @@ import numpy as np
 class Node:
     def __init__(self, joint_values):
         self.joint_values = joint_values #list of JointStates --> for robot with 3dof: need [JointState(angle1), JointState(angle2), JointState(angle3)]
+        self.is_goal = False
+    
+    def set_goal_true(self):
+        self.goal = True
 
     def vectorized_values(self):
         return np.array([self.joint_values[i].value for i in range(len(self.joint_values))])
@@ -62,12 +66,28 @@ class TreeNode(Node):
     def add_successor(self, successor):
         self.successors.append(successor)
 
-    def add_predecessor(self, predecessor):
-        self.predecessor.append(predecessor)
+    def set_predecessor(self, predecessor):
+        self.predecessor = predecessor
+
+    def query_root(self):
+        if self.predecessor is None:
+            return True
+        return False
+
+    def query_succesors(self):
+        if len(self.successors) > 0:
+            return True
+        return False
 
 class Tree(Graph):
     def __init__(self):
         super().__init__()
+
+    def add_edge(self, node1, node2):
+        if super().query_node_in_graph(node1) and super().query_node_in_graph(node2):
+            print("ERROR: cannot add edge between nodes who both have parents")
+        super().add_edge(node1, node2)
+        
 
 
     
