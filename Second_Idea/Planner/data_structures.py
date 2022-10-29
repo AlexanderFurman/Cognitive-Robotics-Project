@@ -87,6 +87,14 @@ class Tree(Graph):
         if super().query_node_in_graph(node1) and super().query_node_in_graph(node2):
             print("ERROR: cannot add edge between nodes who both have parents")
         super().add_edge(node1, node2)
+        if super().query_node_in_graph(node1):
+            node1.add_successor(node2)
+            node2.add_predecessor(node1)
+        else:
+            node2.add_successor(node1)
+            node1.add_predecessor(node2)
+
+
         
 
 
