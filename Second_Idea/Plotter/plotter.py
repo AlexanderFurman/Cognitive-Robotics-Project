@@ -44,7 +44,6 @@ class Plotter:
 
     def plot_targets(self):
         for target in self.targets:
-            print("in here!")
             circle = plt.Circle((target[0], target[1]), self.environment.epsilon, color='g')
             self.ax.add_patch(circle)
 
@@ -56,6 +55,7 @@ class Plotter:
         return
 
     def show_rrt(self, nodes, paths):
+        
         self.ax.clear()
         plt.grid()
         self.ax.set_ylim(self.robot.min_joint_limit,self.robot.max_joint_limit)
@@ -183,6 +183,7 @@ class Plotter:
                 self.frames.append(self.generate_cartesian_points())
                 self.collision_in_frame.append(self.environment.query_robot_collision())
                 self.goal_in_frame.append(self.environment.query_robot_at_goal())
+        print("animating...")
         ani = FuncAnimation(self.fig, self.animate, frames=len(self.frames), interval=1000/framerate, repeat=False)
         i = 0
         while os.path.exists("Second_Idea/Plots/lin_animation%i.gif" % i):
@@ -236,6 +237,7 @@ class Plotter:
         self.fig.subplots_adjust(left=0, right=1-self.robot.n_dof*.05, bottom=0.25)
         self.plot_obstacles()
         self.plot_boundaries()
+        self.plot_targets()
 
         self.robot.forward_kinematics()
         self.ax.plot(*self.generate_cartesian_points(), marker = 'o')
@@ -261,6 +263,7 @@ class Plotter:
             self.ax.clear()
             self.plot_obstacles()
             self.plot_boundaries()
+            self.plot_targets()
             if self.environment.query_robot_collision() is True:
                 self.ax.plot(*self.generate_cartesian_points(), marker='o', color = 'r', lw=4)
             else:

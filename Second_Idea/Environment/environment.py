@@ -20,18 +20,40 @@ class Environment:
     def distance(self, p1, p2):
         return np.linalg.norm(p2-p1)
 
-    def query_boundary_collision(self):
+    # def query_boundary_collision(self):
+    #     if self.is_floor:
+    #         for i in range(len(self.robot.joint_positions)-1):  
+    #             if self.query_segment_collision(self.floor[0], self.robot.joint_positions[i],self.floor[1], self.robot.joint_positions[i+1]):
+    #                 print("floor collision")
+    #                 return True
+    #         if self.query_segment_collision(self.floor[0], self.robot.joint_positions[-1],self.floor[1], self.robot.gripper_position):
+    #             print("floor collision")
+    #             return True
+    #     if self.is_wall:
+    #         for i in range(len(self.robot.joint_positions)-1):  
+    #             if self.query_segment_collision(self.wall[0], self.robot.joint_positions[i],self.wall[1], self.robot.joint_positions[i+1]):
+    #                 print("wall collision")
+    #                 return True
+    #         if self.query_segment_collision(self.wall[0], self.robot.joint_positions[-1],self.wall[1], self.robot.gripper_position):
+    #             print("wall collision")
+    #             return True
+    #     return False
+
+    def query_boundary_collision_temporary(self):
         if self.is_floor:
-            for i in range(len(self.robot.joint_positions)-1):  
-                self.query_segment_collision(self.floor[0], self.floor[1],self.robot.joint_positions[i], self.robot.joint_positions[i+1])
-            self.query_segment_collision(self.floor[0], self.floor[1],self.robot.joint_positions[-1], self.robot.gripper_position)
-
+            for i in range(len(self.robot.joint_positions)):  
+                if self.robot.joint_positions[i][1] <= self.floor[0][1] or self.robot.gripper_position[1] <= self.floor[0][1]:
+                    return True
         if self.is_wall:
-            for i in range(len(self.robot.joint_positions)-1):  
-                self.query_segment_collision(self.wall[0], self.wall[1],self.robot.joint_positions[i], self.robot.joint_positions[i+1])
-            self.query_segment_collision(self.wall[0], self.wall[1],self.robot.joint_positions[-1], self.robot.gripper_position)
-            
+            for i in range(len(self.robot.joint_positions)):  
+                # print("self.robot.joint_positions[i][0] = ", self.robot.joint_positions[i][0])
+                # print("self.floor[0][0] = ", self.floor[0][0])
+                # print("self.robot.gripper_position[0] =", self.robot.gripper_position[0])
+                if self.robot.joint_positions[i][0] <= self.wall[0][0] or self.robot.gripper_position[0] <= self.wall[0][0]:
+                    return True
+        return False
 
+        
     # def on_segment(self,p,q,r):
     #     if ((q[0] <= max(p[0], r[0])) and (q[0] >= min(p[0],r[0]))) and ((q[1] <= max(p[1], r[1])) and (q[1] >= min(p[1],r[1]))):
     #         return True
@@ -47,37 +69,37 @@ class Environment:
     #     else:
     #         return 0 #colinear
 
-    # Given three collinear points p, q, r, the function checks if 
-    # point q lies on line segment 'pr' 
-    def onSegment(self, p, q, r):
-        if ( (q[0] <= max(p[0], r[0])) and (q[0] >= min(p[0], r[0])) and 
-            (q[1] <= max(p[1], r[1])) and (q[1] >= min(p[1], r[1]))):
-            return True
-        return False
+    # # Given three collinear points p, q, r, the function checks if 
+    # # point q lies on line segment 'pr' 
+    # def onSegment(self, p, q, r):
+    #     if ( (q[0] <= max(p[0], r[0])) and (q[0] >= min(p[0], r[0])) and 
+    #         (q[1] <= max(p[1], r[1])) and (q[1] >= min(p[1], r[1]))):
+    #         return True
+    #     return False
     
-    def orientation(self, p, q, r):
-        # to find the orientation of an ordered triplet (p,q,r)
-        # function returns the following values:
-        # 0 : Collinear points
-        # 1 : Clockwise points
-        # 2 : Counterclockwise
+    # def orientation(self, p, q, r):
+    #     # to find the orientation of an ordered triplet (p,q,r)
+    #     # function returns the following values:
+    #     # 0 : Collinear points
+    #     # 1 : Clockwise points
+    #     # 2 : Counterclockwise
         
-        # See https://www.geeksforgeeks.org/orientation-3-ordered-points/amp/ 
-        # for details of below formula. 
+    #     # See https://www.geeksforgeeks.org/orientation-3-ordered-points/amp/ 
+    #     # for details of below formula. 
         
-        val = (float(q[1] - p[1]) * (r[0] - q[0])) - (float(q[0] - p[0]) * (r[1] - q[1]))
-        if (val > 0):
+    #     val = (float(q[1] - p[1]) * (r[0] - q[0])) - (float(q[0] - p[0]) * (r[1] - q[1]))
+    #     if (val > 0):
             
-            # Clockwise orientation
-            return 1
-        elif (val < 0):
+    #         # Clockwise orientation
+    #         return 1
+    #     elif (val < 0):
             
-            # Counterclockwise orientation
-            return 2
-        else:
+    #         # Counterclockwise orientation
+    #         return 2
+    #     else:
             
-            # Collinear orientation
-            return 0
+    #         # Collinear orientation
+    #         return 0
     
     # The main function that returns true if 
     # the line segment 'p1q1' and 'p2q2' intersect.
@@ -190,9 +212,9 @@ class Environment:
             if self.query_link_collision(self.obstacles[i].radius, self.obstacles[i].centre, self.robot.joint_positions[-1], self.robot.gripper_position):
                 # print(f"collision at link {self.robot.n_dof}")
                 return True
-        collide = self.query_boundary_collision()
-        if collide is True:
+        if self.query_boundary_collision_temporary():
             print("colided with floor or wall")
+            return True
         return False
 
     def query_robot_at_goal(self):
