@@ -67,12 +67,18 @@ class TreeNode(Node):
         super().__init__(joint_values)
         self.predecessor = predecessor
         self.successors = np.array([])
+        self.cost = 0
+        while self.query_predecessor():
+            self.cost += self.predecessor.cost
     
     def add_successor(self, successor):
         self.successors = np.append(self.successors, successor)
 
     def set_predecessor(self, predecessor):
         self.predecessor = predecessor
+    
+    def remove_successor(self, successor):
+        self.successors.remove(successor)
 
     def query_root(self):
         if self.predecessor is None:
@@ -83,6 +89,19 @@ class TreeNode(Node):
         if len(self.successors) > 0:
             return True
         return False
+    
+    def query_predecessor(self):
+        if self.predecessor is None:
+            return False
+        return True
+    
+    def update_cost(self, step):
+        cost = step
+        predecessor = self.predecessor
+        while predecessor is not None:
+            cost += predecessor.cost
+            predecessor = predecessor.predecessor
+            
 
 class Tree(Graph):
     def __init__(self):
@@ -91,6 +110,17 @@ class Tree(Graph):
     def add_node(self, node):
         super().add_node(node)
         
+    def neareast_neighbours(self, node, iteration, d=2):
+        radius = d*(np.log(iteration)/iteration)**(1/d)
+        nearest_neighbours = []
+        for node_i in self.nodes:
+            if np.linalg.norm(node_i.vectorized_values() - node.vectorized_values()) <= radius:
+                nearest_neighbours.append(node_i)
+        return nearest_neighbours
+
+
+
+
         
 
     # def add_edge(self, node1, node2):

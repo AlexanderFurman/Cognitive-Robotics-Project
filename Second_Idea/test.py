@@ -22,7 +22,7 @@ def distance(p1, p2):
         return np.linalg.norm(p2-p1)
 
 if __name__ == '__main__':
-    robot = Robot(3)
+    robot = Robot(2)
     # obstacle = Obstacle(3, np.array([15,15]))
     obstacle1 = Obstacle(1, np.array([13,5]))
     obstacle2 = Obstacle(1, np.array([10,5]))
@@ -30,7 +30,7 @@ if __name__ == '__main__':
     target1 = np.array([0,11])
     target2 = np.array([12,7])
     target3 = np.array([-1, 7])
-    environment = Environment(robot, [obstacle1, obstacle2, obstacle3], [target2], epsilon = 1, is_wall = True, is_floor = True)
+    environment = Environment(robot, [obstacle1], [target1], epsilon = 1, is_wall = False, is_floor = False)
     # robot.forward_kinematics()
     plotter = Plotter(environment)
     # plotter.interactive_plot()
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     np.random.seed(6)
     
     rrt_planner = RRTPlanner(environment, 0.05, 10000)
-    tree = rrt_planner.rrt([JointState(0) for _ in range(3)])
+    tree = rrt_planner.rrt_star([JointState(0) for _ in range(2)])
     paths = rrt_planner.generate_paths()
     plotter.show_rrt(tree.nodes, paths)
     min_length = 100000000
