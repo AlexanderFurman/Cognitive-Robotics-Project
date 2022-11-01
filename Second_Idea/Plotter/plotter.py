@@ -4,6 +4,7 @@
 #     sys.path.append('/'.join(__file__.split('/')[:-2]))
     
 from ast import While
+from threading import TIMEOUT_MAX
 import matplotlib.pyplot as plt
 import numpy as np
 from Robot.joint_state import JointState
@@ -24,10 +25,11 @@ class Plotter:
         self.frames= []
         # self.ln, = self.ax.plot([],[],'ro')
         self.collision_in_frame = []
+        self.goal_in_frame = []
 
     def plot_obstacles(self):
         for obstacle in self.obstacles:
-            circle = plt.Circle((obstacle.centre[0], obstacle.centre[1]), obstacle.radius, color='g')
+            circle = plt.Circle((obstacle.centre[0], obstacle.centre[1]), obstacle.radius, color='grey')
             self.ax.add_patch(circle)
 
     def plot_boundaries(self):
@@ -42,7 +44,8 @@ class Plotter:
 
     def plot_targets(self):
         for target in self.targets:
-            circle = plt.Circle((target[0], target[1]), 2, color='g')
+            print("in here!")
+            circle = plt.Circle((target[0], target[1]), self.environment.epsilon, color='g')
             self.ax.add_patch(circle)
 
     def connect_points(self, array, point1, point2):
@@ -52,7 +55,7 @@ class Plotter:
         array.append(ys)
         return
 
-    def show_rrt(self, nodes):
+    def show_rrt(self, nodes, paths):
         self.ax.clear()
         plt.grid()
         self.ax.set_ylim(self.robot.min_joint_limit,self.robot.max_joint_limit)
@@ -64,7 +67,14 @@ class Plotter:
         plt.plot(root_vals[0], root_vals[1])
         for node in nodes:
             self.connect_parent_and_child(node)
-            self.ax.patches = []
+        if len(paths) !=0:
+            path = paths[0]
+            root_node = path.pop(0)
+            plt.plot(root_vals[0], root_vals[1], color='g', markersize = 5)
+
+            # self.ax.patches = []
+            for node in reversed(path):
+                self.connect_parent_and_child(node, 'g', 5)
         plt.show()
 
     def rrt_plot(self, nodes, sample_nodes, nearest_nodes):
@@ -86,23 +96,28 @@ class Plotter:
 
             circle1 = plt.Circle((sample_vec[0], sample_vec[1]), 0.05, color='r')
             self.ax.add_patch(circle1)
-            plt.pause(0.1)
-            circle2 = plt.Circle((near_vec[0], near_vec[1]), 0.05, color='orange')
-            self.ax.add_patch(circle2)
-            plt.pause(0.1)
-            circle3 = plt.Circle((node_vec[0], node_vec[1]), 0.05, color='g')
-            self.ax.add_patch(circle3)
-            plt.pause(0.1)
-            self.connect_parent_and_child(node)
-            self.ax.patches = []
-            plt.pause(0.1)
+            plt.pause(0.01)
         plt.show()
 
-    def connect_parent_and_child(self, child_node):
+    def generate_paths(self):
+        #TODO generate 'shortest' path between set of nodes
+        paths = []
+        for goal_node in self.goal_nodes:
+            path = []
+            current_node = goal_node
+            while current_node.predecessor is not None:
+                path.append(current_node)
+                current_node = current_node.predecessor
+            path.append(current_node) # adds initial state
+            path.reverse()
+            paths.append(path)
+        return paths
+
+    def connect_parent_and_child(self, child_node, color='grey', markersize = 2):
         joint_values_parent = child_node.predecessor.vectorized_values()
         joint_values_child= child_node.vectorized_values()
         xs, ys = [joint_values_parent[0], joint_values_child[0]], [joint_values_parent[1], joint_values_child[1]]
-        plt.plot(xs, ys, marker = 'o', color='grey')
+        plt.plot(xs, ys, marker = 'o', color=color, markersize=markersize, linewidth=markersize/2)
 
     def generate_cartesian_points(self):
         xs = [joint_pos[0] for joint_pos in self.robot.joint_positions]
@@ -149,12 +164,13 @@ class Plotter:
             self.collision_in_frame.append(self.environment.query_robot_collision())
         ani = FuncAnimation(self.fig, self.animate, frames=n_frames, interval=1000/framerate, repeat=False)
         i = 0
-        while os.path.exists("Plots/lin_animation%i.gif" % i):
+        while os.path.exists("/Plots/lin_animation%i.gif" % i):
             i += 1
 
-        ani.save("Plots/lin_animation%i.gif" %i, dpi=300, writer=PillowWriter(fps=framerate))
+        ani.save("/Plots/lin_animation%i.gif" %i, dpi=300, writer=PillowWriter(fps=framerate))
 
     def generate_trajectory(self, path, framerate = 15, n_frames = 75, traj_type = 'linear'):
+        plt.cla()
         for i in range(len(path)-1):
             waypoints = self.generate_config_waypoints(path[i], path[i+1], n_frames, traj_type)
             for i in range(len(waypoints)):
@@ -166,47 +182,54 @@ class Plotter:
                 self.gripper_positions.append(self.robot.gripper_position)
                 self.frames.append(self.generate_cartesian_points())
                 self.collision_in_frame.append(self.environment.query_robot_collision())
-        # ani = FuncAnimation(self.fig, self.animate, frames=n_frames, interval=1000/framerate, repeat=False)
-        # i = 0
-        # while os.path.exists("Plots/lin_animation%i.gif" % i):
-        #     i += 1
+                self.goal_in_frame.append(self.environment.query_robot_at_goal())
+        ani = FuncAnimation(self.fig, self.animate, frames=len(self.frames), interval=1000/framerate, repeat=False)
+        i = 0
+        while os.path.exists("Second_Idea/Plots/lin_animation%i.gif" % i):
+            i += 1
 
-        # ani.save("Plots/lin_animation%i.gif" %i, dpi=300, writer=PillowWriter(fps=framerate))
-        self.ax.set_xbound(-self.robot.n_dof*self.robot.link_length,self.robot.n_dof*self.robot.link_length)
-        self.ax.set_ybound(-self.robot.n_dof*self.robot.link_length,self.robot.n_dof*self.robot.link_length)
-        for i in range(len(self.frames)):
-            plt.clf()
-            self.plot_obstacles()
-            self.plot_targets()
-            self.plot_boundaries()
-            self.plot_targets()
-            if self.collision_in_frame[i] is True:
-                plt.plot(*self.frames[i], marker = 'o', color = 'r', lw=4)
-            else:
-                plt.plot(*self.frames[i], marker = 'o', color = 'b', lw=4)
+        ani.save("Second_Idea/Plots/lin_animation%i.gif" %i, dpi=300, writer=PillowWriter(fps=framerate))
 
-            plt.plot(self.gripper_positions[i][0], self.gripper_positions[i][1], marker='o', color='purple')
-            self.ax.set_xbound(-self.robot.n_dof*self.robot.link_length,self.robot.n_dof*self.robot.link_length)
-            self.ax.set_ybound(-self.robot.n_dof*self.robot.link_length,self.robot.n_dof*self.robot.link_length)
-            plt.pause(1/framerate)
-        plt.show()
+        # self.ax.xlim(-self.robot.n_dof*self.robot.link_length,self.robot.n_dof*self.robot.link_length)
+        # self.ax.ylim(-self.robot.n_dof*self.robot.link_length,self.robot.n_dof*self.robot.link_length)
+        # plt.autoscale(False)
+        # for i in range(len(self.frames)):
+        #     self.ax.clear()
+        #     self.ax.patches = []
+        #     # self.ax.xlim(-self.robot.n_dof*self.robot.link_length,self.robot.n_dof*self.robot.link_length)
+        #     # self.ax.ylim(-self.robot.n_dof*self.robot.link_length,self.robot.n_dof*self.robot.link_length)
+        #     if self.collision_in_frame[i] is True:
+        #         self.ax.plot(*self.frames[i], marker = 'o', color = 'r', lw=4)
+        #     else:
+        #         self.ax.plot(*self.frames[i], marker = 'o', color = 'b', lw=4)
+
+        #     self.ax.plot(self.gripper_positions[i][0], self.gripper_positions[i][1], marker='o', color='purple')
+        #     self.plot_obstacles()
+        #     self.plot_targets()
+        #     self.plot_boundaries()
+        #     # plt.plot(5,5,markersize=5, color='g')
+        #     # plt.plot()
+        #     sleep(1/framerate)
+        #     # plt.pause(1/framerate)
+        # plt.show()
 
 
     def animate(self, i):
         self.ax.clear()
-        # self.ax.set_ylim(0, 22)
-        # self.ax.set_xlim(0,32)
-        self.ax.set_ylim(-40, 40)
-        self.ax.set_xlim(-40,40)
+        self.ax.set_xlim(-self.robot.n_dof*self.robot.link_length,self.robot.n_dof*self.robot.link_length)
+        self.ax.set_ylim(-self.robot.n_dof*self.robot.link_length,self.robot.n_dof*self.robot.link_length)
         self.plot_obstacles()
         self.plot_targets()
         self.plot_boundaries()
         if self.collision_in_frame[i] is True:
-            plt.plot(*self.frames[i], marker = 'o', color = 'r', lw=4)
+            self.ax.plot(*self.frames[i], marker = 'o', color = 'r', lw=4)
+        elif self.goal_in_frame[i] is True:
+            self.ax.plot(*self.frames[i], marker = 'o', color = 'lime', lw=4)
         else:
-            plt.plot(*self.frames[i], marker = 'o', color = 'b', lw=4)
+            self.ax.plot(*self.frames[i], marker = 'o', color = 'b', lw=4)
 
-        plt.plot(self.gripper_positions[i][0], self.gripper_positions[i][1], marker='o', color='purple')
+        self.ax.plot(self.gripper_positions[i][0], self.gripper_positions[i][1], marker='o', color='purple')
+       
 
     
     def interactive_plot(self):

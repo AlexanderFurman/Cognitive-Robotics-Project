@@ -4,7 +4,7 @@ from Robot.joint_state import JointState
 import copy
 
 class Robot:
-    def __init__(self, n_dof=5, link_length = 10, base = [0,0], min_joint_limit = -np.pi/2, max_joint_limit = np.pi/2):
+    def __init__(self, n_dof=5, link_length = 10, base = [0,0], min_joint_limit = -np.pi, max_joint_limit = np.pi):
         self.n_dof = n_dof
         self.link_length = link_length
         self.base = base

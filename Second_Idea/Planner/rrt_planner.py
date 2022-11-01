@@ -36,9 +36,9 @@ class RRTPlanner:
     def query_state_reach_target(self, angles):
         self.environment.robot.set_joint_values(angles)
         self.environment.robot.forward_kinematics()
-        for target in self.environment.targets:
-            return self.environment.query_robot_at_goal(target)
-        return False
+        # for target in self.environment.targets:
+        return self.environment.query_robot_at_goal()
+        # return False
 
     def extend(self, rand_node, near_node):
         rand_node_vector = rand_node.vectorized_values()
@@ -46,7 +46,6 @@ class RRTPlanner:
         new_node_vector = self.step*(rand_node_vector - near_node_vector)/np.linalg.norm(rand_node_vector - near_node_vector) + near_node_vector
         new_node = TreeNode([JointState(new_node_vector[i]) for i in range(len(new_node_vector))])
         if not self.tree.query_node_in_graph(new_node):
-            self.gripper_values.append(self.environment.robot.gripper_position)
             return new_node
         else:
             print("ERROR: node already exists within tree")
@@ -68,6 +67,7 @@ class RRTPlanner:
 
             if not self.query_state_cause_collision(new_node.vectorized_values()) and not self.tree.query_node_in_graph(new_node):
                 self.tree.add_node(new_node)
+                self.gripper_values.append(self.environment.robot.gripper_position)
                 if self.query_state_reach_target(new_node.vectorized_values()):
                     new_node.set_goal_true()
                     self.goal_nodes.append(new_node)

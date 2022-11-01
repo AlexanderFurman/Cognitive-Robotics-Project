@@ -195,9 +195,10 @@ class Environment:
             print("colided with floor or wall")
         return False
 
-    def query_robot_at_goal(self, target):
-        if self.distance(self.robot.gripper_position, target) <= self.epsilon:
-            return True
+    def query_robot_at_goal(self):
+        for target in self.targets:
+            if self.distance(self.robot.gripper_position, target) <= self.epsilon:
+                return True
         return False
 
 
