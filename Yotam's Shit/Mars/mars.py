@@ -57,29 +57,39 @@ def Check_Circles_Collision(circle1,circle2):
     else:
         return True # no collision
 
-m = Map(100,100)
-N_obs = random.randint(5, 20)
-obs = []
-for i in range(N_obs):
-    r = random.randint(2, 10)
-    x = random.randint(0+r, 100-r)
-    y = random.randint(0+r, 100-r)
-    obs.append(Obstacle(r,[x,y]))
+def Create_Obstacles(N_obs):
+    obs = []
+    for i in range(N_obs):
+        r = random.randint(2, 10)
+        x = random.randint(0+r, 100-r)
+        y = random.randint(0+r, 100-r)
+        obs.append(Obstacle(r,[x,y]))
+    return obs
 
-N_goals = random.randint(3, 6)
-goals = []
-for i in range(N_goals):
-    r = random.randint(4, 8)
-    x = random.randint(0+r, 100-r)
-    y = random.randint(0+r, 100-r)
-    
-    g = Goal(r,[x,y])
-    no_col = True
-    for o in obs:
-        no_col = no_col and Check_Circles_Collision(g,o)
-    for p in goals:
-        no_col = no_col and Check_Circles_Collision(g,p)
-    if no_col:
-        goals.append(g)
+def Create_Goals(N_goals, obs):
+    goals = []
+    while len(goals) < N_goals:
+        r = random.randint(4, 8)
+        x = random.randint(0+r, 100-r)
+        y = random.randint(0+r, 100-r)
+        g = Goal(r,[x,y])
+        no_col = True
+        for o in obs:
+            no_col = no_col and Check_Circles_Collision(g,o)
+        for p in goals:
+            no_col = no_col and Check_Circles_Collision(g,p)
+        if no_col:
+            goals.append(g)
+    return goals
 
-Plotter(m,obs,goals)
+def main():
+    m = Map(100,100)
+    N_obs = random.randint(5, 20)
+    obs = Create_Obstacles(N_obs)
+    N_goals = random.randint(3, 6)
+    goals = Create_Goals(N_goals, obs)
+    Plotter(m,obs,goals)
+    return
+
+if __name__ == '__main__':
+    main()
