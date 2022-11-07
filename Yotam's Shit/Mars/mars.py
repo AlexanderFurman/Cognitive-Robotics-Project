@@ -56,8 +56,9 @@ def main():
     
     samples = Create_Samples(map, start, obs, goals, N_samples=100)
     roadmap = Create_Roadmap(samples, obs)
-    Plotter(map, obs, goals, start, samples, roadmap).plot()
-    #Plotter(map, obs, goals, start, samples, roadmap).Create_GIF()
+    #Plotter(map, obs, goals, start, samples, roadmap).plot()
+
+    Plotter(map, obs, goals, start, samples, roadmap, save_gif=True).Create_GIF()
 
     ##TODO: Here we replot the C-space with only the relevant nodes and edges from the PRM solution
     #solution_nodes, solution_edges = PRM_Solve(map, start, goals, obs)

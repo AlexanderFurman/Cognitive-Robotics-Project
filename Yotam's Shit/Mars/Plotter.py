@@ -1,10 +1,9 @@
-import os
+import os, imageio
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation, PillowWriter
 from Geometry import *
 
 class Plotter:
-    def __init__(self, map, obstacles, goals, start, samples=None, roadmap=None, solution_nodes=None, solution_edges=None):
+    def __init__(self, map, obstacles, goals, start, samples=None, roadmap=None, solution_nodes=None, solution_edges=None, save_gif=False):
         self.map = map
         self.obstacles = obstacles
         self.goals = goals
@@ -13,12 +12,10 @@ class Plotter:
         self.roadmap = roadmap
         self.solution_nodes = solution_nodes
         self.solution_edges = solution_edges
+        self.save_gif = save_gif
 
-    def plot(self, fig=None, ax=None):
-        if fig == None or ax == None:
-            fig, ax = plt.subplots()
-        self.fig = fig; self.ax = ax
-        #self.fig, self.ax = plt.subplots()
+    def plot(self):
+        self.fig, self.ax = plt.subplots()
         self.ax.set_ylim(0,self.map.height)
         self.ax.set_xlim(0,self.map.width)
         self.ax.set_title('Mars C-Space')
@@ -30,16 +27,31 @@ class Plotter:
         for g in self.goals:
             g.plot_circle(self.ax)
 
+        if self.save_gif:
+            img_list = ['GIFs/Temp_Images/1.png']
+            plt.savefig('GIFs/Temp_Images/1.png')
+
         # plotting all the nodes (including the start and goal nodes)
         for idx_s, s in enumerate(self.samples):
             s.plot_node(self.ax)
             xlabel_string = 'Nodes: ' + str(idx_s+1) + ' / ' + str(len(self.samples))
             self.ax.set_xlabel(xlabel_string)
             if len(self.samples) < 100:
+                if self.save_gif:
+                    img_list.append('GIFs/Temp_Images/' + str(1+idx_s) + '.png')
+                    plt.savefig('GIFs/Temp_Images/' + str(1+idx_s) + '.png')
                 plt.pause(0.001)
             elif len(self.samples) >= 100:
                 if idx_s % 10 == 0 or idx_s == len(self.samples) - 1:
+                    if self.save_gif:
+                        img_list.append('GIFs/Temp_Images/' + str(1+idx_s) + '.png')
+                        plt.savefig('GIFs/Temp_Images/' + str(1+idx_s) + '.png')
                     plt.pause(0.001)
+
+        if self.save_gif:
+            for i in range(1,10):
+                img_list.append('GIFs/Temp_Images/' + str(1+idx_s+i) + '.png')
+                plt.savefig('GIFs/Temp_Images/' + str(1+idx_s+i) + '.png')
 
         # plotting all the edges
         for idx_e, e in enumerate(self.roadmap):
@@ -48,20 +60,31 @@ class Plotter:
             xlabel_string_new = xlabel_string + ', Edges: ' + str(idx_e+1) + ' / ' + str(len(self.roadmap))
             self.ax.set_xlabel(xlabel_string_new)
             if len(self.roadmap) < 200:
+                if self.save_gif:
+                    img_list.append('GIFs/Temp_Images/' + str(10+idx_s+idx_e) + '.png')
+                    plt.savefig('GIFs/Temp_Images/' + str(10+idx_s+idx_e) + '.png')
                 plt.pause(0.001)
             elif len(self.roadmap) >= 200:
                 if idx_e == len(self.roadmap) - 1:
                     self.ax.set_xlabel(xlabel_string_new + ', Plotting Complete!')   
                 if idx_e % 20 == 0 or idx_e == len(self.roadmap) - 1:
+                    if self.save_gif:
+                        img_list.append('GIFs/Temp_Images/' + str(10+idx_s+idx_e) + '.png')
+                        plt.savefig('GIFs/Temp_Images/' + str(10+idx_s+idx_e) + '.png')
                     plt.pause(0.001)
+        
+        if self.save_gif:
+            for j in range(1,15):
+                img_list.append('GIFs/Temp_Images/' + str(10+idx_s+idx_e+j) + '.png')
+                plt.savefig('GIFs/Temp_Images/' + str(10+idx_s+idx_e+j) + '.png')
 
         plt.show()
+        if self.save_gif:
+            return img_list
         return
 
-    def replot(self, fig=None, ax=None):
-        if fig == None or ax == None:
-            fig, ax = plt.subplots()
-        self.fig = fig; self.ax = ax
+    def replot(self):
+        self.fig, self.ax = plt.subplots()
         self.ax.set_ylim(0,self.map.height)
         self.ax.set_xlim(0,self.map.width)
         self.ax.set_title('Solved Mars C-Space')
@@ -93,12 +116,18 @@ class Plotter:
         plt.show()
         return
 
-    def Create_GIF(self, framerate = 15, n_frames = 75):
-        #TODO: Make it work
-        fig, _ = plt.subplots()
-        ani = FuncAnimation(fig, self.plot(), frames=n_frames, interval=1000/framerate, repeat=False)
+    def Create_GIF(self):
+        img_list = self.plot()
+
         i = 0
         while os.path.exists("GIFs/PRM_Animation%i.gif" % i):
             i += 1
-        ani.save("GIFs/PRM_Animation%i.gif" % i, dpi=300, writer=PillowWriter(fps=framerate))
+        with imageio.get_writer("GIFs/PRM_Animation%i.gif" % i, mode='I') as writer:
+            for filename in img_list:
+                image = imageio.imread(filename)
+                writer.append_data(image)
+
+        # Remove the image files
+        for filename in set(img_list):
+            os.remove(filename)
         return
