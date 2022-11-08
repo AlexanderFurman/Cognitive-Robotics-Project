@@ -1,7 +1,7 @@
 import random
 from Geometry import *
 from PRM import *
-from Plotter import Plotter
+from Plotter import *
 
 def Create_Obstacles(N_obs):
     obs = []
@@ -47,22 +47,22 @@ def Create_Start_Node(obs, goals):
 
 def main():
     N_obs = random.randint(5, 20)
-    N_goals = random.randint(3, 6)
+    N_goals = 3
 
     map = Map(100,100)
     obs = Create_Obstacles(N_obs)
     goals = Create_Goal_Zones(N_goals, obs)
     start = Create_Start_Node(obs, goals)
     
-    samples = Create_Samples(map, start, obs, goals, N_samples=100)
-    roadmap = Create_Roadmap(samples, obs)
-    #Plotter(map, obs, goals, start, samples, roadmap).plot()
+    samples, goal_nodes = Create_Samples(map, start, obs, goals, N_samples=200)
+    roadmap, PRM_graph = Create_Roadmap(samples, obs, N_knn=5)
+    #Plotter(map, obs, goals, start, samples=samples, roadmap=roadmap, PRM_graph=PRM_graph, save_gif=False).plot()
 
-    Plotter(map, obs, goals, start, samples, roadmap, save_gif=True).Create_GIF()
-
-    ##TODO: Here we replot the C-space with only the relevant nodes and edges from the PRM solution
-    #solution_nodes, solution_edges = PRM_Solve(map, start, goals, obs)
-    #Plotter(map, obs, goals, start, solution_nodes, solution_edges).replot()
+    new_graph, trajectories = PRM_Solve(start, goals, samples, goal_nodes, roadmap, PRM_graph)
+    
+    #Plotter(map, obs, goals, start, samples=samples, roadmap=roadmap, trajectories=trajectories, save_gif=True).Create_GIF(replot=True)
+    Plotter(map, obs, goals, start, trajectories=trajectories).replot(clean=True)
+    Visualize_Final_Graph(new_graph)
     return
 
 if __name__ == '__main__':
