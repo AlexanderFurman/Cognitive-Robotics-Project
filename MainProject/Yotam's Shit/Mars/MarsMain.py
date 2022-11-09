@@ -1,7 +1,7 @@
 import random
-from Geometry import *
-from PRM import *
-from Plotter import *
+from MarsGeometry import *
+from MotionPlanner import *
+from MarsPlotter import *
 
 def Create_Obstacles(N_obs):
     obs = []

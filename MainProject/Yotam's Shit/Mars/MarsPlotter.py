@@ -1,7 +1,7 @@
 import os, imageio
 import matplotlib.pyplot as plt
 import networkx as nx
-from Geometry import *
+from MarsGeometry import *
 
 class Plotter:
     def __init__(self, map, obstacles, goals, start, samples=None, roadmap=None, PRM_graph=None, trajectories=None, save_gif=False):
