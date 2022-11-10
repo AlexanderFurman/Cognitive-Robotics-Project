@@ -19,6 +19,7 @@ class Edge:
         self.xy1 = node1.center
         self.xy2 = node2.center
         self.color = color
+        self.plotted = False
         if cost == None:
             self.cost = Euclidean_Distance(self.xy1,self.xy2)
         else:
@@ -89,6 +90,7 @@ class Node:
         self.parent_index = parent_index
         self.color = color
         self.name = name
+        self.plotted = False
 
     def __str__(self):
         return str(self.center[0]) + "," + str(self.center[1]) + "," + str(self.cost) + "," + str(self.parent_index)

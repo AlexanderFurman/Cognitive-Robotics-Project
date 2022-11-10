@@ -1,7 +1,8 @@
 import random
 from MarsGeometry import *
-from MotionPlanner import *
+from MarsMotionPlanner import *
 from MarsPlotter import *
+from MarsTaskPlanner import *
 
 def Create_Obstacles(N_obs):
     obs = []
@@ -56,13 +57,23 @@ def main():
     
     samples, goal_nodes = Create_Samples(map, start, obs, goals, N_samples=200)
     roadmap, PRM_graph = Create_Roadmap(samples, obs, N_knn=5)
+    #figure, axis = plt.subplots(2, 2)
     #Plotter(map, obs, goals, start, samples=samples, roadmap=roadmap, PRM_graph=PRM_graph, save_gif=False).plot()
 
     new_graph, trajectories = PRM_Solve(start, goals, samples, goal_nodes, roadmap, PRM_graph)
-    
+
+    final_trajectory = TaskPlanner(new_graph, save_pddl=True).GetFinalTrajectory()
+    if final_trajectory == None:
+        return
+        
     #Plotter(map, obs, goals, start, samples=samples, roadmap=roadmap, trajectories=trajectories, save_gif=True).Create_GIF(replot=True)
-    Plotter(map, obs, goals, start, trajectories=trajectories).replot(clean=True)
+
+    #Plotter(map, obs, goals, start, trajectories=trajectories).replot(clean=True)
+
+    #Plotter(map, obs, goals, start, samples=samples, roadmap=roadmap, trajectories=trajectories).plot4()
+
     Visualize_Final_Graph(new_graph)
+    Plotter(map, obs, goals, start, trajectories=final_trajectory).plot_final()
     return
 
 if __name__ == '__main__':
