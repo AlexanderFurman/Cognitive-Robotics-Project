@@ -3,12 +3,13 @@ warnings.simplefilter("ignore", UserWarning) # For some reason we get a warning 
 from unified_planning.shortcuts import *
 from unified_planning.model.metrics import *
 from unified_planning.io import PDDLWriter
-from MarsGeometry import *
+from Nav_Modules.Nav_Geometry import *
 
 class TaskPlanner:
-    def __init__(self, new_graph, save_pddl=False):
+    def __init__(self, new_graph, save_pddl=False, output_path=None):
         self.new_graph = new_graph
         self.save_pddl = save_pddl
+        self.output_path = output_path
         self.goals = []
         for node in new_graph:
             if isinstance(node, Start_Node):
@@ -95,8 +96,8 @@ class TaskPlanner:
         ## Save the .pddl files if you want
         if self.save_pddl:
             w = PDDLWriter(problem)
-            w.write_domain('PDDL/domain_Mars.pddl')
-            w.write_problem('PDDL/problem_Mars.pddl')
+            w.write_domain(self.output_path+'domain_Mars.pddl')
+            w.write_problem(self.output_path+'problem_Mars.pddl')
         return problem
 
     def SolveProblem(self):

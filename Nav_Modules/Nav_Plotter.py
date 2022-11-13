@@ -1,12 +1,12 @@
 import os, imageio
 import matplotlib.pyplot as plt
 import networkx as nx
-from MarsGeometry import *
+from Nav_Modules.Nav_Geometry import *
 from matplotlib.axes._axes import _log as matplotlib_axes_logger
 matplotlib_axes_logger.setLevel('ERROR')
 
 class Plotter:
-    def __init__(self, map, obstacles, goals, start, samples=None, roadmap=None, PRM_graph=None,  new_graph=None, trajectories=None, final_traj=None, axis=None, save_gif=False, show_anim=True):
+    def __init__(self, map, obstacles, goals, start, samples, roadmap, PRM_graph, new_graph, trajectories, final_traj, output_path=None, axis=None, save_img=False, save_gif=False, show_anim=True):
         self.map = map
         self.obstacles = obstacles
         self.goals = goals
@@ -18,10 +18,12 @@ class Plotter:
         self.trajectories = trajectories
         self.final_traj = final_traj
         self.ax = axis
+        self.save_img = save_img
         self.save_gif = save_gif
         self.show_anim = show_anim
+        self.output_path = output_path
     
-    def plot_init(self, axis=None, save_png=False):
+    def plot_init(self, axis=None):
         """
         Plots the initial image (.png) of the map, including obstacles, goal zones, and the starting point
         :param axis: axis of the subplot to add the plot to
@@ -42,8 +44,8 @@ class Plotter:
 
         if self.show_anim:
             plt.show()
-        if save_png:
-            plt.savefig('Images/Initial_Map.png')
+        if self.save_img:
+            plt.savefig(self.output_path+'Initial_Map.png')
         return
 
     def plot_knn(self):
@@ -79,6 +81,8 @@ class Plotter:
             plt.pause(0.001)
 
         plt.show()
+        if self.save_img:
+            plt.savefig(self.output_path+'kNN.png')
         return
 
     def plot_PRM(self, axis=None):
@@ -88,7 +92,6 @@ class Plotter:
         """
         if axis is None:
             _, axis = plt.subplots()
-            #self.ax = axis
         axis.set_ylim(0,self.map.height)
         axis.set_xlim(0,self.map.width)
         axis.set_title('Probabilistic Roadmap')
@@ -101,8 +104,8 @@ class Plotter:
             g.plot_circle(axis)
 
         if self.save_gif:
-            img_list = ['GIFs/Temp_Images/1.png']
-            plt.savefig('GIFs/Temp_Images/1.png')
+            img_list = ['Output/Temp_Images/1.png']
+            plt.savefig('Output/Temp_Images/1.png')
 
         # plotting all the nodes (including the start and goal nodes)
         for idx_s, s in enumerate(self.samples):
@@ -111,22 +114,22 @@ class Plotter:
             axis.set_xlabel(xlabel_string)
             if len(self.samples) < 100:
                 if self.save_gif:
-                    img_list.append('GIFs/Temp_Images/' + str(1+idx_s) + '.png')
-                    plt.savefig('GIFs/Temp_Images/' + str(1+idx_s) + '.png')
+                    img_list.append('Output/Temp_Images/' + str(1+idx_s) + '.png')
+                    plt.savefig('Output/Temp_Images/' + str(1+idx_s) + '.png')
                 if self.show_anim:
                     plt.pause(0.001)
             elif len(self.samples) >= 100:
                 if idx_s % 10 == 0 or idx_s == len(self.samples) - 1:
                     if self.save_gif:
-                        img_list.append('GIFs/Temp_Images/' + str(1+idx_s) + '.png')
-                        plt.savefig('GIFs/Temp_Images/' + str(1+idx_s) + '.png')
+                        img_list.append('Output/Temp_Images/' + str(1+idx_s) + '.png')
+                        plt.savefig('Output/Temp_Images/' + str(1+idx_s) + '.png')
                     if self.show_anim:
                         plt.pause(0.001)
 
         if self.save_gif:
             for i in range(1,10):
-                img_list.append('GIFs/Temp_Images/' + str(1+idx_s+i) + '.png')
-                plt.savefig('GIFs/Temp_Images/' + str(1+idx_s+i) + '.png')
+                img_list.append('Output/Temp_Images/' + str(1+idx_s+i) + '.png')
+                plt.savefig('Output/Temp_Images/' + str(1+idx_s+i) + '.png')
 
         # plotting all the edges
         for idx_e, e in enumerate(self.roadmap):
@@ -136,8 +139,8 @@ class Plotter:
             axis.set_xlabel(xlabel_string_new)
             if len(self.roadmap) < 200:
                 if self.save_gif:
-                    img_list.append('GIFs/Temp_Images/' + str(10+idx_s+idx_e) + '.png')
-                    plt.savefig('GIFs/Temp_Images/' + str(10+idx_s+idx_e) + '.png')
+                    img_list.append('Output/Temp_Images/' + str(10+idx_s+idx_e) + '.png')
+                    plt.savefig('Output/Temp_Images/' + str(10+idx_s+idx_e) + '.png')
                 if self.show_anim:
                     plt.pause(0.001)
             elif len(self.roadmap) >= 200 and len(self.roadmap) < 1000:
@@ -145,8 +148,8 @@ class Plotter:
                     axis.set_xlabel(xlabel_string_new + ', Plotting Complete!')   
                 if idx_e % 20 == 0 or idx_e == len(self.roadmap) - 1:
                     if self.save_gif:
-                        img_list.append('GIFs/Temp_Images/' + str(10+idx_s+idx_e) + '.png')
-                        plt.savefig('GIFs/Temp_Images/' + str(10+idx_s+idx_e) + '.png')
+                        img_list.append('Output/Temp_Images/' + str(10+idx_s+idx_e) + '.png')
+                        plt.savefig('Output/Temp_Images/' + str(10+idx_s+idx_e) + '.png')
                     if self.show_anim:
                         plt.pause(0.001)
             elif len(self.roadmap) >= 1000:
@@ -154,18 +157,19 @@ class Plotter:
                     axis.set_xlabel(xlabel_string_new + ', Plotting Complete!')   
                 if idx_e % 200 == 0 or idx_e == len(self.roadmap) - 1:
                     if self.save_gif:
-                        img_list.append('GIFs/Temp_Images/' + str(10+idx_s+idx_e) + '.png')
-                        plt.savefig('GIFs/Temp_Images/' + str(10+idx_s+idx_e) + '.png')
+                        img_list.append('Output/Temp_Images/' + str(10+idx_s+idx_e) + '.png')
+                        plt.savefig('Output/Temp_Images/' + str(10+idx_s+idx_e) + '.png')
                     if self.show_anim:
                         plt.pause(0.001)
         
         if self.show_anim:
             plt.show()
+        if self.save_img:
+            plt.savefig(self.output_path+'/PRM.png')
         if self.save_gif:
             for j in range(1,15):
-                img_list.append('GIFs/Temp_Images/' + str(10+idx_s+idx_e+j) + '.png')
-                plt.savefig('GIFs/Temp_Images/' + str(10+idx_s+idx_e+j) + '.png')
-        if self.save_gif:
+                img_list.append('Output/Temp_Images/' + str(10+idx_s+idx_e+j) + '.png')
+                plt.savefig('Output/Temp_Images/' + str(10+idx_s+idx_e+j) + '.png')
             return img_list
         return
 
@@ -177,7 +181,6 @@ class Plotter:
         """
         if axis is None:
             _, axis = plt.subplots()
-
         axis.set_ylim(0,self.map.height)
         axis.set_xlim(0,self.map.width)
         if clean:
@@ -198,8 +201,8 @@ class Plotter:
                 e.plot_edge(axis)
 
         if self.save_gif:
-            img_list = ['GIFs/Temp_Images/1.png']
-            plt.savefig('GIFs/Temp_Images/1.png')
+            img_list = ['Output/Temp_Images/1.png']
+            plt.savefig('Output/Temp_Images/1.png')
 
         count = 0
         # plotting the solution trajectories (including the start and goal nodes)
@@ -219,23 +222,25 @@ class Plotter:
                     o.plot_edge(axis, color='yellow')
                 if self.save_gif:
                     count += 1
-                    img_list.append('GIFs/Temp_Images/' + str(1+count) + '.png')
-                    plt.savefig('GIFs/Temp_Images/' + str(1+count) + '.png')
+                    img_list.append('Output/Temp_Images/' + str(1+count) + '.png')
+                    plt.savefig('Output/Temp_Images/' + str(1+count) + '.png')
                 if self.show_anim:
                     plt.pause(0.001)
         
         if self.save_gif:
             for j in range(1,15):
-                img_list.append('GIFs/Temp_Images/' + str(1+count+j) + '.png')
-                plt.savefig('GIFs/Temp_Images/' + str(1+count+j) + '.png')
+                img_list.append('Output/Temp_Images/' + str(1+count+j) + '.png')
+                plt.savefig('Output/Temp_Images/' + str(1+count+j) + '.png')
 
+        if self.save_img:
+            plt.savefig(self.output_path+'Dijkstra.png')
         if self.show_anim:
             plt.show()
         if self.save_gif:
             return img_list
         return
 
-    def Visualize_Final_Graph(self, axis=None, save_png=False):
+    def Visualize_Final_Graph(self, axis=None):
         """
         Plots a simplified graph (.png) showing the connections between the critical nodes as well as their weights
         :param new_graph: dictionary which contains the distances between pairs of critical nodes as well as the best path on the PRM that connects them
@@ -259,8 +264,8 @@ class Plotter:
         axis.set_title('Simplified Graph Representation')
         if self.show_anim:
             plt.show()
-        if save_png:
-            plt.savefig('Images/Simplified_Graph.png')
+        if self.save_img:
+            plt.savefig(self.output_path+'Simplified_Graph.png')
         return
 
     def plot4(self):
@@ -277,14 +282,12 @@ class Plotter:
         plt.show()
         return
 
-    def plot_final(self, axis=None, save_png=False):
+    def plot_final(self):
         """
         Plots the map (.png or .gif) showing the paths obtained by the Dijstrka algorithm, including those paths, the PRM (optinal), and the initial map contents
         :param axis: axis of the subplot to add the plot to
         """
-        if axis is None:
-            _, axis = plt.subplots()
-
+        fig, axis = plt.subplots()
         axis.set_ylim(0,self.map.height)
         axis.set_xlim(0,self.map.width)
         axis.set_title('Final C-Space Trajectory for the Mars Rover')
@@ -297,8 +300,8 @@ class Plotter:
             g.plot_circle(axis)
 
         if self.save_gif:
-            img_list = ['GIFs/Temp_Images/1.png']
-            plt.savefig('GIFs/Temp_Images/1.png')
+            img_list = ['Output/Temp_Images/1.png']
+            plt.savefig('Output/Temp_Images/1.png')
 
         count = 0
         # plotting the solution trajectories (including the start and goal nodes)
@@ -334,29 +337,29 @@ class Plotter:
                 #o.plotted = True
                 if self.save_gif:
                     #count += 1
-                    img_list.append('GIFs/Temp_Images/' + str(1+count) + '.png')
-                    plt.savefig('GIFs/Temp_Images/' + str(1+count) + '.png')
+                    img_list.append('Output/Temp_Images/' + str(1+count) + '.png')
+                    plt.savefig('Output/Temp_Images/' + str(1+count) + '.png')
                 if self.show_anim:
                     plt.pause(0.01)
 
         plt.show()
+        if self.save_img:
+            plt.savefig(self.output_path+'Final_Map.png')
         if self.save_gif:
             for j in range(1,15):
-                img_list.append('GIFs/Temp_Images/' + str(1+count+j) + '.png')
-                plt.savefig('GIFs/Temp_Images/' + str(1+count+j) + '.png')
+                img_list.append('Output/Temp_Images/' + str(1+count+j) + '.png')
+                plt.savefig('Output/Temp_Images/' + str(1+count+j) + '.png')
         if self.save_gif:
             return img_list
-        if save_png:
-            plt.savefig('Images/Final_Map.png')
         return
 
     def Create_GIF(self, replot=False, clean=False):
         if not replot:
             img_list = self.plot()
-            name = "GIFs/PRM_Animation"
+            name = self.output_path+"PRM_Animation"
         else:
             img_list = self.replot(clean)
-            name = "GIFs/Dijkstra_Animation"
+            name = self.output_path+"Dijkstra_Animation"
 
         i = 0
         while os.path.exists(name + "%i.gif" % i):

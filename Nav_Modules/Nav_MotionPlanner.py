@@ -1,6 +1,6 @@
 import random, sys
 from scipy.spatial import KDTree
-from MarsGeometry import *
+from Nav_Modules.Nav_Geometry import *
 
 def Create_Goal_Nodes(goals):
     return [g.Create_Goal_Node(name='G'+str(idx+1)) for idx, g in enumerate(goals)]
