@@ -1,8 +1,14 @@
-# Cognitive Robotics Final Project - Spring 2022
-Creators: Alex Furman & Yotam Granov
+# Integrated Task & Motion Planning for a Simplified Mars Rover Exploration Problem
+## Cognitive Robotics Spring 2022 Final Project - Alex Furman & Yotam Granov
+
+### Abstract
+In this work, we implement task and motion planning methods in order to solve a simplified exploration problem for a hypothetical Mars rover called *Ignorance*. The rover is tasked with autonomously navigating across the surface of Mars to multiple goal zones without hitting any obstacles, and we must ensure that it reaches all goal zones assigned to it. At each goal zone, the rover will extract a geological sample from a cave at that location (which it must first map out), and once it has retrieved samples from every goal zone it must return to its base with the samples.
+
+To solve this problem, we sampled a large number of points in the rover's configuration space (C-space) and implemented the Probabilistic Roadmap (PRM) algorithm in order to build a graph connecting the sampled points to their k-nearest neighbors. A single point is sampled from within each goal zone, which we'll call a goal node, and every goal node will be connected to the PRM graph (along with the location of the base, which we treat as the start node). We then apply Dijkstra's shortest path algorithm between the start node and every goal node, as well as between every pair of goal nodes, in order to construct a simple weighted graph that represents the total distance between each crucial node (the start and goal nodes). We treat this graph as a weighted Travelling Salesman Problem (without the limitation that each node can only be visited once), and solve it using the Optimal Fast Downward classical planner in order to obtain the final path for *Ignorance*. In order to effectively integrate the task and motion planning here, we utilize the Unified Planning Framework library for Python, which allows us to easily encode classical planning problems into PDDL with geometric constraints obtained from the motion planner (which is implemented completely in Python).
+
+Finally, at each goal point we show the motion planning procedure for how the rover's arm will retrieve the geological sample without colliding with any of the cave's walls, and we do so using the Rapidly Exploring Random Trees (RRT) algorithm. We also implement the optimized RRT algorithm (known as RRT*) for this same purpose, and compare the efficiency of the two algorithms when applied to our problem.
 
 ![](https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Yotam's%20Shit/Mars/GIFs/PRM_Animation0.gif)
-
 
 ### References
 
