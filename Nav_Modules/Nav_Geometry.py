@@ -2,16 +2,21 @@ import math, random
 import matplotlib.pyplot as plt
 import numpy as np
 
-class Map:
-    def __init__(self, width, height, color='#e77d11'):
+class Rectangle:
+    def __init__(self, origin, width, height, color='grey'):
         self.width = width
         self.height = height
         self.color = color
+        self.origin = origin
 
-    def plot_map(self, ax):
-        rectangle = plt.Rectangle([0, 0], self.width, self.height, color=self.color)
+    def plot_rectangle(self, ax):
+        rectangle = plt.Rectangle(xy=self.origin, width=self.width, height=self.height, color=self.color)
         ax.add_patch(rectangle)
         return
+
+class Map(Rectangle):
+    def __init__(self, origin=np.array([0, 0]), width=100, height=100, color='#e77d11'):
+        super().__init__(origin=origin, width=width, height=height, color=color)
 
 class Edge:
     def __init__(self, node1, node2, cost=None, color='black'):

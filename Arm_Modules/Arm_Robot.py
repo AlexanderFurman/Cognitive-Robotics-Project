@@ -32,7 +32,7 @@ class Robot:
         return
 
     def forward_kinematics(self):
-        current_gripper_pos = copy.deepcopy(self.gripper_position)
+        _ = copy.deepcopy(self.gripper_position)
         self.joint_positions = [np.array([i*self.link_length, 0]) for i in range(self.n_dof)]
         self.gripper_position = np.array([(self.n_dof)*self.link_length, 0])
         self.joint_positions[0] = np.array([0,0])

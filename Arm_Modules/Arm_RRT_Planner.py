@@ -14,12 +14,9 @@ class RRTPlanner:
         self.nearest_nodes = []
 
     def sample_random_state(self):
-        # np.random.seed(1)
         node_in_tree = True
         while node_in_tree:
             rand_angles = np.random.uniform(self.environment.robot.min_joint_limit, self.environment.robot.max_joint_limit, self.environment.robot.n_dof) # check if uniform works, try also np.random.rand
-            print("rand angles = ", rand_angles)
-            # rand_angles = np.random.rand(2) * (self.environment.robot.max_joint_limit-self.environment.robot.min_joint_limit) + self.environment.robot.min_joint_limit
             joint_values_node = TreeNode([JointState(rand_angles[i]) for i in range(len(rand_angles))])
             node_in_tree = self.tree.query_node_in_graph(joint_values_node)
         return joint_values_node
@@ -63,7 +60,6 @@ class RRTPlanner:
                 if self.query_state_reach_target(new_node.vectorized_values()):
                     new_node.set_goal_true()
                     self.goal_nodes.append(new_node)
-                # self.tree.add_edge(nearest_node, new_node) # check that predecessor, successor working -- update: id doesnt
                 new_node.set_predecessor(nearest_node)
                 nearest_node.add_successor(new_node)
         return self.tree
@@ -73,7 +69,6 @@ class RRTPlanner:
         for i in range(self.max_iterations):
             if len(self.goal_nodes) > 0:
                 return self.tree
-            print(f"iteration number: {i}")
             random_node = self.sample_random_state()
             self.random_samples.append(random_node)
             nearest_node = self.tree.nearest_neighbour(random_node)
@@ -86,7 +81,6 @@ class RRTPlanner:
                 if self.query_state_reach_target(new_node.vectorized_values()):
                     new_node.set_goal_true()
                     self.goal_nodes.append(new_node)
-                # self.tree.add_edge(nearest_node, new_node) # check that predecessor, successor working -- update: id doesnt
                 new_node.set_predecessor(nearest_node)
                 new_node.update_cost(self.step)
                 nearest_node.add_successor(new_node)
@@ -120,7 +114,6 @@ class RRTPlanner:
         return True
         
     def generate_paths(self):
-        #TODO generate 'shortest' path between set of nodes
         paths = []
         for goal_node in self.goal_nodes:
             path = []

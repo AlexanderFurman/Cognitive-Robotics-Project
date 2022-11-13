@@ -88,7 +88,7 @@ def main():
 
     path = CreateOutputFolder(save_imgs,save_gifs,save_pddl)
 
-    map = Map(100,100)
+    map = Map()
     obs = Create_Obstacles(N_obs)
     goals = Create_Goal_Zones(N_goals, obs)
     start = Create_Start_Node(obs, goals)

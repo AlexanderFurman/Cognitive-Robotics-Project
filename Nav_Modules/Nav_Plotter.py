@@ -35,7 +35,7 @@ class Plotter:
         axis.set_title('Initial Map (C-Space)')
 
         # plotting the map, obstacles, and goal zones
-        self.map.plot_map(axis)
+        self.map.plot_rectangle(axis)
         for o in self.obstacles:
             o.plot_circle(axis)
         for g in self.goals:
@@ -58,7 +58,7 @@ class Plotter:
         self.ax.set_title('k-Nearest Neighbors Display')
         
         # plotting the map, obstacles, and goal zones
-        self.map.plot_map(self.ax)
+        self.map.plot_rectangle(self.ax)
         for o in self.obstacles:
             o.plot_circle(self.ax)
         for g in self.goals:
@@ -97,7 +97,7 @@ class Plotter:
         axis.set_title('Probabilistic Roadmap')
 
         # plotting the map, obstacles, and goal zones
-        self.map.plot_map(axis)
+        self.map.plot_rectangle(axis)
         for o in self.obstacles:
             o.plot_circle(axis)
         for g in self.goals:
@@ -161,7 +161,6 @@ class Plotter:
                         plt.savefig('Output/Temp_Images/' + str(10+idx_s+idx_e) + '.png')
                     if self.show_anim:
                         plt.pause(0.001)
-        
         if self.show_anim:
             plt.show()
         if self.save_img:
@@ -189,7 +188,7 @@ class Plotter:
             axis.set_title('PRM with Dijkstra Paths')
 
         # plotting the map, obstacles, and goal zones
-        self.map.plot_map(axis)
+        self.map.plot_rectangle(axis)
         for o in self.obstacles:
             o.plot_circle(axis)
         for g in self.goals:
@@ -293,7 +292,7 @@ class Plotter:
         axis.set_title('Final C-Space Trajectory for the Mars Rover')
 
         # plotting the map, obstacles, and goal zones
-        self.map.plot_map(axis)
+        self.map.plot_rectangle(axis)
         for o in self.obstacles:
             o.plot_circle(axis)
         for g in self.goals:
