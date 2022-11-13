@@ -9,49 +9,49 @@
  (:action move_g1_g2
   :parameters ( ?r - rover_0 ?l_from - goal1 ?l_to - goal2)
   :precondition (and (rover_at ?r ?l_from))
-  :effect (and (not (rover_at ?r ?l_from)) (rover_at ?r ?l_to) (visited ?r ?l_to) (increase (total-cost) 57)))
+  :effect (and (not (rover_at ?r ?l_from)) (rover_at ?r ?l_to) (visited ?r ?l_to) (increase (total-cost) 60)))
  (:action move_g1_g3
   :parameters ( ?r - rover_0 ?l_from - goal1 ?l_to_0 - goal3)
   :precondition (and (rover_at ?r ?l_from))
-  :effect (and (not (rover_at ?r ?l_from)) (rover_at ?r ?l_to_0) (visited ?r ?l_to_0) (increase (total-cost) 76)))
+  :effect (and (not (rover_at ?r ?l_from)) (rover_at ?r ?l_to_0) (visited ?r ?l_to_0) (increase (total-cost) 106)))
  (:action move_g1_s
   :parameters ( ?r - rover_0 ?l_from - goal1 ?l_to_1 - start_)
   :precondition (and (rover_at ?r ?l_from))
-  :effect (and (not (rover_at ?r ?l_from)) (rover_at ?r ?l_to_1) (visited ?r ?l_to_1) (increase (total-cost) 36)))
+  :effect (and (not (rover_at ?r ?l_from)) (rover_at ?r ?l_to_1) (visited ?r ?l_to_1) (increase (total-cost) 37)))
  (:action move_g2_g1
   :parameters ( ?r - rover_0 ?l_from_0 - goal2 ?l_to_2 - goal1)
   :precondition (and (rover_at ?r ?l_from_0))
-  :effect (and (not (rover_at ?r ?l_from_0)) (rover_at ?r ?l_to_2) (visited ?r ?l_to_2) (increase (total-cost) 57)))
+  :effect (and (not (rover_at ?r ?l_from_0)) (rover_at ?r ?l_to_2) (visited ?r ?l_to_2) (increase (total-cost) 60)))
  (:action move_g2_g3
   :parameters ( ?r - rover_0 ?l_from_0 - goal2 ?l_to_0 - goal3)
   :precondition (and (rover_at ?r ?l_from_0))
-  :effect (and (not (rover_at ?r ?l_from_0)) (rover_at ?r ?l_to_0) (visited ?r ?l_to_0) (increase (total-cost) 80)))
+  :effect (and (not (rover_at ?r ?l_from_0)) (rover_at ?r ?l_to_0) (visited ?r ?l_to_0) (increase (total-cost) 45)))
  (:action move_g2_s
   :parameters ( ?r - rover_0 ?l_from_0 - goal2 ?l_to_1 - start_)
   :precondition (and (rover_at ?r ?l_from_0))
-  :effect (and (not (rover_at ?r ?l_from_0)) (rover_at ?r ?l_to_1) (visited ?r ?l_to_1) (increase (total-cost) 58)))
+  :effect (and (not (rover_at ?r ?l_from_0)) (rover_at ?r ?l_to_1) (visited ?r ?l_to_1) (increase (total-cost) 44)))
  (:action move_g3_g1
   :parameters ( ?r - rover_0 ?l_from_1 - goal3 ?l_to_2 - goal1)
   :precondition (and (rover_at ?r ?l_from_1))
-  :effect (and (not (rover_at ?r ?l_from_1)) (rover_at ?r ?l_to_2) (visited ?r ?l_to_2) (increase (total-cost) 76)))
+  :effect (and (not (rover_at ?r ?l_from_1)) (rover_at ?r ?l_to_2) (visited ?r ?l_to_2) (increase (total-cost) 106)))
  (:action move_g3_g2
   :parameters ( ?r - rover_0 ?l_from_1 - goal3 ?l_to - goal2)
   :precondition (and (rover_at ?r ?l_from_1))
-  :effect (and (not (rover_at ?r ?l_from_1)) (rover_at ?r ?l_to) (visited ?r ?l_to) (increase (total-cost) 80)))
+  :effect (and (not (rover_at ?r ?l_from_1)) (rover_at ?r ?l_to) (visited ?r ?l_to) (increase (total-cost) 45)))
  (:action move_g3_s
   :parameters ( ?r - rover_0 ?l_from_1 - goal3 ?l_to_1 - start_)
   :precondition (and (rover_at ?r ?l_from_1))
-  :effect (and (not (rover_at ?r ?l_from_1)) (rover_at ?r ?l_to_1) (visited ?r ?l_to_1) (increase (total-cost) 112)))
+  :effect (and (not (rover_at ?r ?l_from_1)) (rover_at ?r ?l_to_1) (visited ?r ?l_to_1) (increase (total-cost) 90)))
  (:action move_s_g1
   :parameters ( ?r - rover_0 ?l_from_2 - start_ ?l_to_2 - goal1)
   :precondition (and (rover_at ?r ?l_from_2))
-  :effect (and (not (rover_at ?r ?l_from_2)) (rover_at ?r ?l_to_2) (visited ?r ?l_to_2) (increase (total-cost) 36)))
+  :effect (and (not (rover_at ?r ?l_from_2)) (rover_at ?r ?l_to_2) (visited ?r ?l_to_2) (increase (total-cost) 37)))
  (:action move_s_g2
   :parameters ( ?r - rover_0 ?l_from_2 - start_ ?l_to - goal2)
   :precondition (and (rover_at ?r ?l_from_2))
-  :effect (and (not (rover_at ?r ?l_from_2)) (rover_at ?r ?l_to) (visited ?r ?l_to) (increase (total-cost) 58)))
+  :effect (and (not (rover_at ?r ?l_from_2)) (rover_at ?r ?l_to) (visited ?r ?l_to) (increase (total-cost) 44)))
  (:action move_s_g3
   :parameters ( ?r - rover_0 ?l_from_2 - start_ ?l_to_0 - goal3)
   :precondition (and (rover_at ?r ?l_from_2))
-  :effect (and (not (rover_at ?r ?l_from_2)) (rover_at ?r ?l_to_0) (visited ?r ?l_to_0) (increase (total-cost) 112)))
+  :effect (and (not (rover_at ?r ?l_from_2)) (rover_at ?r ?l_to_0) (visited ?r ?l_to_0) (increase (total-cost) 90)))
 )
