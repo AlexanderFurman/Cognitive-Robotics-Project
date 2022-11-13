@@ -115,6 +115,7 @@ class RRTPlanner:
             return
         else:
             if node_i.cost < node_j.predecessor.cost:
+                print("rewiring")
                 if self.passed_collision_test:
                     node_j.predecessor.remove_successor(node_j)
                     node_j.set_predecessor(node_i)

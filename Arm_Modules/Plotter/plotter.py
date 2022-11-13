@@ -1,7 +1,7 @@
-# import sys
-# path = '/'.join(__file__.split('/')[:-2])
-# if path not in sys.path:
-#     sys.path.append('/'.join(__file__.split('/')[:-2]))
+import sys
+mypath = '/'.join(__file__.split('/')[:-2])
+if mypath not in sys.path:
+    sys.path.append('/'.join(__file__.split('/')[:-2]))
     
 from ast import While
 from threading import TIMEOUT_MAX
@@ -75,7 +75,17 @@ class Plotter:
             # self.ax.patches = []
             for node in reversed(path):
                 self.connect_parent_and_child(node, 'g', 5)
+        plt.title(f"rrt C-Space, {len(nodes)} nodes generated until solution")
+        # i=1
+        # name = mypath + "/Plots/C_Space_" + str(i) + ".png"
+        # while os.path.exists(name):
+        #     i += 1
+        # name = mypath + "/Plots/C_Space_" + str(i) + ".png"
+        # plt.savefig(name, dpi=399)
         plt.show()
+        
+        # plt.savefig(f"{mypath}/Plots/C_Space_{i}.png")
+        
 
     def rrt_plot(self, nodes, sample_nodes, nearest_nodes):
         self.ax.clear()
@@ -229,7 +239,7 @@ class Plotter:
         else:
             self.ax.plot(*self.frames[i], marker = 'o', color = 'b', lw=4)
 
-        self.ax.plot(self.gripper_positions[i][0], self.gripper_positions[i][1], marker='o', color='purple')
+        self.ax.plot(self.gripper_positions[i][0], self.gripper_positions[i][1], marker='o', color='purple', markersize = 10)
        
 
     
@@ -241,7 +251,7 @@ class Plotter:
 
         self.robot.forward_kinematics()
         self.ax.plot(*self.generate_cartesian_points(), marker = 'o')
-        self.ax.plot(self.robot.gripper_position[0], self.robot.gripper_position[1], marker='o', color='purple')
+        self.ax.plot(self.robot.gripper_position[0], self.robot.gripper_position[1], marker='o', color='purple', markersize=10)
         self.ax.set_xbound(-self.robot.n_dof*self.robot.link_length,self.robot.n_dof*self.robot.link_length)
         self.ax.set_ybound(0,self.robot.n_dof*self.robot.link_length)
         sliders = [None for _ in range(self.robot.n_dof)]
@@ -269,7 +279,7 @@ class Plotter:
             else:
                 self.ax.plot(*self.generate_cartesian_points(), marker='o', color = 'b', lw=4)
 
-            self.ax.plot(self.robot.gripper_position[0], self.robot.gripper_position[1], marker='o', color='purple')
+            self.ax.plot(self.robot.gripper_position[0], self.robot.gripper_position[1], marker='o', color='purple', markersize=10)
             self.ax.set_xbound(-self.robot.n_dof*self.robot.link_length,self.robot.n_dof*self.robot.link_length)
             self.ax.set_ybound(0,self.robot.n_dof*self.robot.link_length)
             self.fig.canvas.draw_idle()
