@@ -15,7 +15,7 @@ Finally, at each goal point we show the motion planning procedure for how the ro
 ### Initial Map
 ![](https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Initial_Map.png)
 
-### Probabilstic Roadmap (PRM)
+### Probabilistic Roadmap (PRM)
 ![](https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/PRM.png)
 
 ### Dijkstra's Algorithm
