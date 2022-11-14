@@ -1,15 +1,11 @@
-import os#, sys
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from matplotlib.animation import PillowWriter
 from matplotlib.widgets import Slider
 from Arm_Modules.Arm_Robot import JointState
-from Nav_Modules.Nav_Geometry import Rectangle#, Obstacle
-
-#mypath = '/'.join(__file__.split('/')[:-2])
-#if mypath not in sys.path:
-#    sys.path.append('/'.join(__file__.split('/')[:-2]))
+from Nav_Modules.Nav_Geometry import Rectangle, Circle
 
 class Plotter:
     def __init__(self, environment):
@@ -25,16 +21,13 @@ class Plotter:
 
     def plot_obstacles(self):
         for obs in self.obstacles:
-            #o = Obstacle((obs.centre[0], obs.centre[1]))
-            #circle = plt.Circle((obs.centre[0], obs.centre[1]), obs.radius, color='grey')
-            #self.ax.add_patch(circle)
             obs.plot_circle(self.ax)
         return
 
     def plot_background(self):
-        floor = Rectangle(np.array([-20,-20]), 40, 15, color='#e77d11')
+        floor = Rectangle(np.array([-20,-20]), 40, 17.5, color='#e77d11')
         floor.plot_rectangle(self.ax)
-        sky = Rectangle(np.array([-20,-5]), 40, 25, color='blue')
+        sky = Rectangle(np.array([-20,-2.5]), 40, 22.5, color='#5adeff')
         sky.plot_rectangle(self.ax)
         return
     
@@ -47,6 +40,27 @@ class Plotter:
             xy = np.array([-5,0])
             rect = Rectangle(xy, 5, self.robot.n_dof*self.robot.link_length)
             rect.plot_rectangle(self.ax)
+        return
+
+    def plot_rover(self):
+        wheel_r = 2.5; wheel_color = 'black'
+        Circle(wheel_r, np.array([-10,-5]), wheel_color).plot_circle(self.ax)
+        Circle(wheel_r, np.array([10,-5]), wheel_color).plot_circle(self.ax)
+        Circle(wheel_r, np.array([0,-5]), wheel_color).plot_circle(self.ax)
+        wheel_r = 2.2; wheel_color = 'grey'
+        Circle(wheel_r, np.array([-10,-5]), wheel_color).plot_circle(self.ax)
+        Circle(wheel_r, np.array([10,-5]), wheel_color).plot_circle(self.ax)
+        Circle(wheel_r, np.array([0,-5]), wheel_color).plot_circle(self.ax)
+
+        xy = np.array([-0.5,0])*self.robot.n_dof*self.robot.link_length + np.array([0,-5])
+        Rectangle(xy, self.robot.n_dof*self.robot.link_length, 5).plot_rectangle(self.ax)
+
+        wheel_r = 2.5; wheel_color = 'black'
+        Circle(wheel_r, np.array([-5,-5]), wheel_color).plot_circle(self.ax)
+        Circle(wheel_r, np.array([5,-5]), wheel_color).plot_circle(self.ax)
+        wheel_r = 2.2; wheel_color = 'grey'
+        Circle(wheel_r, np.array([-5,-5]), wheel_color).plot_circle(self.ax)
+        Circle(wheel_r, np.array([5,-5]), wheel_color).plot_circle(self.ax)
         return
 
     def plot_targets(self):
@@ -70,7 +84,7 @@ class Plotter:
 
         root_node = nodes.pop(0)
         root_vals = root_node.vectorized_values()
-        print("root_vals = ", root_vals)
+        print("Root values: ", root_vals)
         plt.plot(root_vals[0], root_vals[1])
         for node in nodes:
             self.connect_parent_and_child(node)
@@ -80,7 +94,8 @@ class Plotter:
             plt.plot(root_vals[0], root_vals[1], color='g', markersize = 5)
             for node in reversed(path):
                 self.connect_parent_and_child(node, 'g', 5)
-        plt.title(f"rrt C-Space, {len(nodes)} nodes generated until solution")
+        plt.title("RRT C-Space")
+        plt.xlabel(f"{len(nodes)} Nodes Generated Until Solution")
         # i=1
         # name = mypath + "/Plots/C_Space_" + str(i) + ".png"
         # while os.path.exists(name):
@@ -112,19 +127,6 @@ class Plotter:
             plt.pause(0.01)
         plt.show()
         return
-
-    #def generate_paths(self):
-    #    paths = []
-    #    for goal_node in self.goal_nodes:
-    #        path = []
-    #        current_node = goal_node
-    #        while current_node.predecessor is not None:
-    #            path.append(current_node)
-    #            current_node = current_node.predecessor
-    #        path.append(current_node) # adds initial state
-    #        path.reverse()
-    #        paths.append(path)
-    #    return paths
 
     def connect_parent_and_child(self, child_node, color='grey', markersize = 2):
         joint_values_parent = child_node.predecessor.vectorized_values()
@@ -176,9 +178,9 @@ class Plotter:
 
         ani = FuncAnimation(self.fig, self.animate, frames=n_frames, interval=1000/framerate, repeat=False)
         i = 0
-        while os.path.exists("Output/Plots/lin_animation%i.gif" % i):
+        while os.path.exists("Output/Plots/Arm_Animation%i.gif" % i):
             i += 1
-        ani.save("Output/Plots/lin_animation%i.gif" %i, dpi=300, writer=PillowWriter(fps=framerate))
+        ani.save("Output/Plots/Arm_Animation%i.gif" %i, dpi=300, writer=PillowWriter(fps=framerate))
         return
 
     def generate_trajectory(self, path, framerate = 15, n_frames = 75, traj_type = 'linear'):
@@ -199,9 +201,9 @@ class Plotter:
         print("Animating...")
         ani = FuncAnimation(self.fig, self.animate, frames=len(self.frames), interval=1000/framerate, repeat=False)
         i = 0
-        while os.path.exists("Output/Plots/lin_animation%i.gif" % i):
+        while os.path.exists("Output/Plots/Arm_Animation%i.gif" % i):
             i += 1
-        ani.save("Output/Plots/lin_animation%i.gif" %i, dpi=300, writer=PillowWriter(fps=framerate))
+        ani.save("Output/Plots/Arm_Animation%i.gif" %i, dpi=300, writer=PillowWriter(fps=framerate))
         print("Complete!")
         return
 
@@ -212,13 +214,14 @@ class Plotter:
         self.plot_background()
         self.plot_obstacles()
         self.plot_targets()
-        self.plot_boundaries()
+        self.plot_rover()
+        #self.plot_boundaries()
         if self.collision_in_frame[i] is True:
             self.ax.plot(*self.frames[i], marker = 'o', color = 'r', lw=4)
         elif self.goal_in_frame[i] is True:
             self.ax.plot(*self.frames[i], marker = 'o', color = 'lime', lw=4)
         else:
-            self.ax.plot(*self.frames[i], marker = 'o', color = 'black', lw=4)
+            self.ax.plot(*self.frames[i], marker = 'o', color = '#cccccc', lw=4)
 
         self.ax.plot(self.gripper_positions[i][0], self.gripper_positions[i][1], marker='o', color='purple', markersize = 10)
         return

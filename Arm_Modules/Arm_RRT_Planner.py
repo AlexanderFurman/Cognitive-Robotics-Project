@@ -39,15 +39,16 @@ class RRTPlanner:
         if not self.tree.query_node_in_graph(new_node):
             return new_node
         else:
-            print("ERROR: node already exists within tree")
+            print("ERROR: Node already exists within tree...")
             return
 
     def rrt(self, initial_joint_values):
         self.tree.add_node(TreeNode(initial_joint_values))
+        print("Running the RRT Algorithm...")
         for i in range(self.max_iterations):
             if len(self.goal_nodes) > 0:
+                print(f"Finished running the RRT Algorithm, after {i} iterations.\n")
                 return self.tree
-            print(f"iteration number: {i}")
             random_node = self.sample_random_state()
             self.random_samples.append(random_node)
             nearest_node = self.tree.nearest_neighbour(random_node)
@@ -62,6 +63,7 @@ class RRTPlanner:
                     self.goal_nodes.append(new_node)
                 new_node.set_predecessor(nearest_node)
                 nearest_node.add_successor(new_node)
+        print(f"Finished running the RRT Algorithm, after {i} iterations.\n")
         return self.tree
 
     def rrt_star(self, initial_joint_values):
@@ -98,7 +100,7 @@ class RRTPlanner:
             return
         else:
             if node_i.cost < node_j.predecessor.cost:
-                print("rewiring")
+                print("Rewiring...")
                 if self.passed_collision_test:
                     node_j.predecessor.remove_successor(node_j)
                     node_j.set_predecessor(node_i)

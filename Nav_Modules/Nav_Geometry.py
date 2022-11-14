@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 class Rectangle:
-    def __init__(self, origin, width, height, color='grey'):
+    def __init__(self, origin, width, height, color='#cccccc'):
         self.width = width
         self.height = height
         self.color = color

@@ -1,10 +1,5 @@
 import numpy as np
 
-#class Obstacle:
-#    def __init__(self, radius, centre):
-#        self.radius = radius
-#        self.centre = centre
-
 class Environment:
     def __init__(self, robot, obstacles, targets, initial_state = None, epsilon = 0.5, is_floor = True, is_wall = False):
         self.robot = robot

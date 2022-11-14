@@ -1,16 +1,14 @@
 import numpy as np
-from Arm_Modules.Arm_Robot import JointState
-from Arm_Modules.Arm_Robot import Robot
+from Arm_Modules.Arm_Robot import JointState, Robot
 from Arm_Modules.Arm_Plotter import Plotter
 from Arm_Modules.Arm_Environment import Environment
 from Arm_Modules.Arm_RRT_Planner import RRTPlanner
-#from Arm_Modules.Arm_Environment import Obstacle
 from Nav_Modules.Nav_Geometry import Obstacle
 
 def distance(p1, p2):
-        return np.linalg.norm(p2-p1)
+    return np.linalg.norm(p2-p1)
 
-def main():
+def run():
     robot = Robot(2)#, link_length=5)
     # obstacle = Obstacle(3, np.array([15,15]))
     obstacle1 = Obstacle(1, np.array([13,5]))
@@ -23,7 +21,6 @@ def main():
     # robot.forward_kinematics()
     plotter = Plotter(environment)
     ######plotter.interactive_plot()
-
 
     # joint_states_i, joint_states_f = [JointState() for _ in range(4)], [JointState(3.14/4), JointState(3.14/4), JointState(-3.14/2), JointState()]
     # plotter.generate_trajectory(joint_states_i, joint_states_f, 5, 30)
@@ -44,10 +41,10 @@ def main():
             min_length = distance(pos, target3)
             current_pos = pos
 
-    print("gripper pos found which is closest to goal: ", current_pos)
-    print("min dist to target:", min_length)
+    print("Gripper position found which is closest to goal: ", current_pos)
+    print(f"Min. distance to target: {min_length:0.3f}\n")
     # print(paths[0][-1].vectorized_values())
-    print(paths[0][i].vectorized_values() for i in range(len(paths[0])))
+    #print(paths[0][i].vectorized_values() for i in range(len(paths[0])))
     nodes = paths[0]
     states = [nodes[i].joint_values for i in range(len(nodes))]
     plotter.generate_trajectory(states, n_frames = 3)
@@ -57,4 +54,4 @@ def main():
     return
 
 if __name__ == '__main__':
-    main()
+    run()
