@@ -19,7 +19,10 @@ In the first part of the problem, we want to plan the path of the rover between 
 
 ### Initial Map
 First, the initial map of the environment for the navigation problem is produced. It is shown in the following figure:
-![](https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Initial_Map.png)
+<p align="center">
+  <img src=https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Initial_Map.png/>
+</p>
+
 The rover's start point is represented by the blue point, the goal zones are the green circles, and the obstacles are the dark orange circles. The free space of the rover is colored light orange.
 
 ### Probabilistic Roadmap (PRM)
