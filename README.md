@@ -25,7 +25,7 @@ Finally, at each goal point we show the motion planning procedure for how the ro
 ![](https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Simplified_Graph.png)
 
 ### Final Trajectory
-TO DO
+![](https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Final_Map.png)
 
 ## (2) Arm Motion Planning
 

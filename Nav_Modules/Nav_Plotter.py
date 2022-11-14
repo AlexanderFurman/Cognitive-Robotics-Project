@@ -341,9 +341,9 @@ class Plotter:
                 if self.show_anim:
                     plt.pause(0.01)
 
-        plt.show()
         if self.save_img:
             plt.savefig(self.output_path+'Final_Map.png')
+        plt.show()
         if self.save_gif:
             for j in range(1,15):
                 img_list.append('Output/Temp_Images/' + str(1+count+j) + '.png')
