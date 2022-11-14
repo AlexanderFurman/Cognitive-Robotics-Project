@@ -1,4 +1,4 @@
-import os, imageio
+import os, imageio, shutil
 import matplotlib.pyplot as plt
 import networkx as nx
 from Nav_Modules.Nav_Geometry import *
@@ -104,6 +104,7 @@ class Plotter:
             g.plot_circle(axis)
 
         if self.save_gif:
+            print("Producing PRM animation .gif...")
             img_list = ['Output/Temp_Images/1.png']
             plt.savefig('Output/Temp_Images/1.png')
 
@@ -129,7 +130,7 @@ class Plotter:
         if self.save_gif:
             for i in range(1,10):
                 img_list.append('Output/Temp_Images/' + str(1+idx_s+i) + '.png')
-                plt.savefig('Output/Temp_Images/' + str(1+idx_s+i) + '.png')
+                shutil.copyfile('Output/Temp_Images/' + str(1+idx_s) + '.png', 'Output/Temp_Images/' + str(1+idx_s+i) + '.png')
 
         # plotting all the edges
         for idx_e, e in enumerate(self.roadmap):
@@ -168,8 +169,9 @@ class Plotter:
         if self.save_gif:
             for j in range(1,15):
                 img_list.append('Output/Temp_Images/' + str(10+idx_s+idx_e+j) + '.png')
-                plt.savefig('Output/Temp_Images/' + str(10+idx_s+idx_e+j) + '.png')
-            return img_list
+                shutil.copyfile('Output/Temp_Images/' + str(10+idx_s+idx_e) + '.png', 'Output/Temp_Images/' + str(10+idx_s+idx_e+j) + '.png')
+            self.Create_GIF(img_list, "PRM_Animation")
+            print("\t...Done")
         return
 
     def plot_Dijkstra(self, axis=None, clean=False):
@@ -200,6 +202,7 @@ class Plotter:
                 e.plot_edge(axis)
 
         if self.save_gif:
+            print("Producing Dijsktra animation .gif...")
             img_list = ['Output/Temp_Images/1.png']
             plt.savefig('Output/Temp_Images/1.png')
 
@@ -229,14 +232,15 @@ class Plotter:
         if self.save_gif:
             for j in range(1,15):
                 img_list.append('Output/Temp_Images/' + str(1+count+j) + '.png')
-                plt.savefig('Output/Temp_Images/' + str(1+count+j) + '.png')
+                shutil.copyfile('Output/Temp_Images/' + str(1+count) + '.png', 'Output/Temp_Images/' + str(1+count+j) + '.png')
 
         if self.save_img:
             plt.savefig(self.output_path+'Dijkstra.png')
         if self.show_anim:
             plt.show()
         if self.save_gif:
-            return img_list
+            self.Create_GIF(img_list, "Dijkstra_Animation")
+            print("\t...Done")
         return
 
     def Visualize_Final_Graph(self, axis=None):
@@ -277,7 +281,6 @@ class Plotter:
         self.plot_Dijkstra(axis=axis[1,0], clean=True)
         # Final Trajectory - [1,1]
         self.Visualize_Final_Graph(axis=axis[1,1])
-
         plt.show()
         return
 
@@ -286,7 +289,7 @@ class Plotter:
         Plots the map (.png or .gif) showing the paths obtained by the Dijstrka algorithm, including those paths, the PRM (optinal), and the initial map contents
         :param axis: axis of the subplot to add the plot to
         """
-        fig, axis = plt.subplots()
+        _, axis = plt.subplots()
         axis.set_ylim(0,self.map.height)
         axis.set_xlim(0,self.map.width)
         axis.set_title('Final C-Space Trajectory for the Mars Rover')
@@ -299,6 +302,7 @@ class Plotter:
             g.plot_circle(axis)
 
         if self.save_gif:
+            print("Producing final trajectory animation .gif...")
             img_list = ['Output/Temp_Images/1.png']
             plt.savefig('Output/Temp_Images/1.png')
 
@@ -311,63 +315,36 @@ class Plotter:
             else:
                 axis.set_xlabel(xlabel_string)
             count += 1
-            #any_plotted = False
             for o in traj:
                 if isinstance(o,Node):
                     if not isinstance(o,Start_Node) and not isinstance(o,Goal_Node):
                         o.plot_node(axis, color=((255-(20*count))/255, (255-(20*count))/255, 0))
-                        #if not o.plotted and not any_plotted:
-                        #    o.plot_node(self.ax, color='yellow')
-                        #    any_plotted = True
-                        #else:
-                        #    o.plot_node(self.ax, color=((170-(20*count))/255, (255-(20*count))/255, 0))
-                        #    any_plotted = True
                     else:
                         o.plot_node(axis)
                 elif isinstance(o,Edge):
                     o.plot_edge(axis, color=((255-(30*count))/255, (255-(30*count))/255, 0))
-                    #if not o.plotted and not any_plotted:
-                    #    o.plot_edge(self.ax, color='yellow')
-                    #    any_plotted = True
-                    #else:
-                    #    #o.plot_edge(self.ax, color=(255/255, (234-(10*count))/255, 0))
-                    #    o.plot_edge(self.ax, color=((170-(20*count))/255, (255-(20*count))/255, 0))
-                    #    any_plotted = True
-                #o.plotted = True
                 if self.save_gif:
-                    #count += 1
                     img_list.append('Output/Temp_Images/' + str(1+count) + '.png')
                     plt.savefig('Output/Temp_Images/' + str(1+count) + '.png')
-                if self.show_anim:
-                    plt.pause(0.01)
+                plt.pause(0.1)
+            plt.pause(0.01)
 
         if self.save_img:
             plt.savefig(self.output_path+'Final_Map.png')
-        plt.show()
         if self.save_gif:
             for j in range(1,15):
                 img_list.append('Output/Temp_Images/' + str(1+count+j) + '.png')
-                plt.savefig('Output/Temp_Images/' + str(1+count+j) + '.png')
-        if self.save_gif:
-            return img_list
+                shutil.copyfile('Output/Temp_Images/' + str(1+count) + '.png', 'Output/Temp_Images/' + str(1+count+j) + '.png')
+            self.Create_GIF(img_list, "Final_Trajectory_Animation")
+            print("\t...Done\n")
+        plt.show()
         return
 
-    def Create_GIF(self):#, replot=False, clean=False):
-        #if not replot:
-        #    img_list = self.plot()
-        #    name = self.output_path+"PRM_Animation"
-        #else:
-        #    img_list = self.replot(clean)
-        #    name = self.output_path+"Dijkstra_Animation"
-
-        i = 0
-        while os.path.exists(name + "%i.gif" % i):
-            i += 1
-        with imageio.get_writer(name + "%i.gif" % i, mode='I') as writer:
+    def Create_GIF(self, img_list, name):
+        with imageio.get_writer(self.output_path + name + ".gif", mode='I') as writer:
             for filename in img_list:
                 image = imageio.imread(filename)
                 writer.append_data(image)
-
         # Remove the temporary image files
         for filename in set(img_list):
             os.remove(filename)

@@ -3,6 +3,7 @@ from Nav_Modules.Nav_Geometry import *
 from Nav_Modules.Nav_MotionPlanner import *
 from Nav_Modules.Nav_Plotter import *
 from Nav_Modules.Nav_TaskPlanner import *
+from Arm_Run import Arm_Run
 
 def Create_Obstacles(N_obs):
     """
@@ -79,15 +80,19 @@ def CreateOutputFolder(save_imgs,save_gifs,save_pddl):
 
 def main():
     argus = options()
-    N_goals = argus.n; N_samples = argus.s; show_animation = argus.a; show_knn = argus.k
+    N_goals = argus.n; N_samples = argus.s; show_knn = argus.k; show_animation = argus.a
     save_pddl = argus.p; save_gifs = argus.g; save_imgs = argus.i
     if argus.o is not None:
         N_obs = argus.o
     else:
         N_obs = random.randint(5, 20)
 
-    path = CreateOutputFolder(save_imgs,save_gifs,save_pddl)
+    #if save_gifs or save_imgs:
+    #    show_animation = True
+    #else:
+    print("** Starting the Ignorance simulation **\n")
 
+    path = CreateOutputFolder(save_imgs,save_gifs,save_pddl)
     map = Map()
     obs = Create_Obstacles(N_obs)
     goals = Create_Goal_Zones(N_goals, obs)
@@ -101,7 +106,7 @@ def main():
         return
         
     plotter = Plotter(map, obs, goals, start, samples, roadmap, PRM_graph, new_graph, trajectories, final_trajectory, output_path=path, save_img=save_imgs, save_gif=save_gifs, show_anim=show_animation)
-    if save_imgs or show_animation:
+    if show_animation or show_knn or save_gifs: 
         plotter.plot_init()
         plotter.plot_PRM()
         if show_knn:
@@ -111,6 +116,12 @@ def main():
     else:
         plotter.plot4()
     plotter.plot_final()
+
+    arm = False
+    if arm:
+        Arm_Run(output_path=path, save_img=save_imgs, save_gif=True)
+
+    print("** Ignorance simulation complete! **")
     return
 
 def options():
@@ -120,7 +131,7 @@ def options():
     parser.add_argument("-s", dest='s', required=False, default=200, help="Number of samples for PRM")
     parser.add_argument("-a", dest='a', required=False, default=False, help="Show animations")
     parser.add_argument("-k", dest='k', required=False, default=False, help="Plot the k-nearest neighbors animation")
-    parser.add_argument("-p", dest='p', required=False, default=True, help="Save .pddl files")
+    parser.add_argument("-p", dest='p', required=False, default=False, help="Save .pddl files")
     parser.add_argument("-i", dest='i', required=False, default=False, help="Save .png image files")
     parser.add_argument("-g", dest='g', required=False, default=False, help="Save .gif animation files")
     #parser.add_argument('-o', metavar='create_output', required=False, default=False, help='Declare whether or not you want the script to produce an excel file with the relevant data')

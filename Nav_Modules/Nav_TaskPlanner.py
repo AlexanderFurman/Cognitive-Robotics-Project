@@ -142,5 +142,5 @@ class TaskPlanner:
                         elif n2.name == start_node and n1.name == end_node:  
                             final_trajectory.append(new_graph[n1][n2]['Trajectory'][::-1])
                             total_distance += new_graph[n1][n2]['Value'] 
-        print(f"Total cost of the proposed path: {total_distance:0.3f}")
+        print(f"Total cost of the proposed path: {total_distance:0.3f}\n")
         return final_trajectory

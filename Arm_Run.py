@@ -8,7 +8,7 @@ from Nav_Modules.Nav_Geometry import Obstacle#, Euclidean_Distance
 #def distance(p1, p2):
 #    return np.linalg.norm(p2-p1)
 
-def run():
+def Arm_Run(output_path=None, save_img=False, save_gif=True):
     robot = Robot(2)#, link_length=5)
     # obstacle = Obstacle(3, np.array([15,15]))
     obstacle1 = Obstacle(10, np.array([13,23]))
@@ -36,7 +36,8 @@ def run():
     tree = rrt_planner.rrt([JointState(np.pi/2), JointState(np.pi/2)])
     #tree = rrt_planner.rrt([JointState(0), JointState(np.pi), JointState(0), JointState(np.pi)])
     paths = rrt_planner.generate_paths()
-    plotter.show_rrt(tree.nodes, paths)
+    plotter.show_rrt(tree.nodes, paths, output_path)
+
     min_length = 100000000
     current_pos = rrt_planner.gripper_values[0]
     for pos in rrt_planner.gripper_values:
@@ -50,11 +51,13 @@ def run():
     #print(paths[0][i].vectorized_values() for i in range(len(paths[0])))
     nodes = paths[0]
     states = [nodes[i].joint_values for i in range(len(nodes))]
-    plotter.generate_trajectory(states, n_frames = 3)
+
+    if save_gif:
+        plotter.generate_trajectory(states, n_frames = 3)
 
     # fig,ax = plt.subplots()
     # plt.plot()
     return
 
 if __name__ == '__main__':
-    run()
+    Arm_Run()
