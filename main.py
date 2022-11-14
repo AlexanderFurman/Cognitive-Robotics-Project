@@ -81,15 +81,12 @@ def CreateOutputFolder(save_imgs,save_gifs,save_pddl):
 def main():
     argus = options()
     N_goals = argus.n; N_samples = argus.s; show_knn = argus.k; show_animation = argus.a
-    save_pddl = argus.p; save_gifs = argus.g; save_imgs = argus.i
+    save_pddl = argus.p; save_gifs = argus.g; save_imgs = argus.i; show_arm = argus.arm
     if argus.o is not None:
         N_obs = argus.o
     else:
         N_obs = random.randint(5, 20)
 
-    #if save_gifs or save_imgs:
-    #    show_animation = True
-    #else:
     print("** Starting the Ignorance simulation **\n")
 
     path = CreateOutputFolder(save_imgs,save_gifs,save_pddl)
@@ -117,15 +114,14 @@ def main():
         plotter.plot4()
     plotter.plot_final()
 
-    arm = False
-    if arm:
+    if show_arm:
         Arm_Run(output_path=path, save_img=save_imgs, save_gif=True)
-
     print("** Ignorance simulation complete! **")
     return
 
 def options():
     parser = argparse.ArgumentParser(description="Integrated Task & Motion Planning for a Simplified Mars Rover Exploration Problem", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("-arm", dest='arm', required=False, default=True, help="Run the arm simulation")
     parser.add_argument("-n", dest='n', required=False, default=3, help="Number of goals to create")
     parser.add_argument("-o", dest='o', required=False, default=None, help="Number of obstacles to create")
     parser.add_argument("-s", dest='s', required=False, default=200, help="Number of samples for PRM")
@@ -134,7 +130,6 @@ def options():
     parser.add_argument("-p", dest='p', required=False, default=False, help="Save .pddl files")
     parser.add_argument("-i", dest='i', required=False, default=False, help="Save .png image files")
     parser.add_argument("-g", dest='g', required=False, default=False, help="Save .gif animation files")
-    #parser.add_argument('-o', metavar='create_output', required=False, default=False, help='Declare whether or not you want the script to produce an excel file with the relevant data')
     return parser.parse_args()
 
 if __name__ == '__main__':
