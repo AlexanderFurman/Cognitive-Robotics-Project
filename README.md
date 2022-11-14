@@ -30,6 +30,9 @@ TO DO
 ## (2) Arm Motion Planning
 
 ### Rapidly Exploring Random Trees (RRT)
+![](https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/RRT_C-Space.png)
+
+### Final Trajectory
 ![](https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Arm_Animation.gif)
 
 ### References
