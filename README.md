@@ -25,6 +25,7 @@ The rover's start point is represented by the blue point, the goal zones are the
 ### Probabilistic Roadmap (PRM)
 Next, we sample a certain number of points (the default is 200) from the rover's workspace, including one point per goal zone (this becomes the goal node that will be added to the roadmap, and they are represented in dark green). We use a k-Nearest Neighbors (kNN) algorithm (the default k is 5) to connect each sample to its nearest neighbors (i.e. create an edge between them), and then we run a collision detection algorithm to check whether any of the produced edges collide with any of the obstacles. In the following animation, we first see the sampling process, where the black points represent the sample nodes that were produced (using uniform random sampling). The second part of the animation shows the production of valid edges using the kNN and collision detection algorithms:
 ![](https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/PRM_Animation.gif)
+
 The yellow points represent nodes which have been connected to their neighbors, and the black lines between the yellow points represent the appropriate edges. The start and goal nodes are highlighted once they are connected to the roadmpa. Once the edge production process is completed, we are left with a graph that should, in most cases (this is a probabilistic process after all), connect the start node to all of the goal nodes and most of the goal nodes to each other, and thus we obtain our Probabilistic Roadmap (PRM).
 
 ### Dijkstra's Algorithm
