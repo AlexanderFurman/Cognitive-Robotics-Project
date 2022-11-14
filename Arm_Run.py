@@ -20,7 +20,7 @@ def Arm_Run(output_path=None, save_img=False, save_gif=True):
     target1 = np.array([0,11])
     target2 = np.array([16,8])
     target3 = np.array([-1, 7])
-    environment = Environment(robot, [obstacle1, obstacle2, obstacle3, obstacle4, obstacle5, obstacle6], [target2], epsilon = 1, is_wall = False, is_floor = True)
+    environment = Environment(robot, [obstacle1, obstacle2, obstacle3, obstacle5, obstacle6], [target2], epsilon = 1, is_wall = False, is_floor = True)
     # robot.forward_kinematics()
     plotter = Plotter(environment)
     # plotter.interactive_plot()

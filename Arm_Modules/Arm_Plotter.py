@@ -112,21 +112,43 @@ class Plotter:
         plt.grid()
         self.ax.set_ylim(-np.pi,np.pi)
         self.ax.set_xlim(-np.pi,np.pi)
+        # nodes_plotted = []
 
         root_node = nodes.pop(0)
         root_vals = root_node.vectorized_values()
         print("root_vals = ", root_vals)
-        plt.plot(root_vals[0], root_vals[1])
+        plt.plot(root_vals[0], root_vals[1], 0.05, color='grey')
         for (node, sample_node, nearest_node) in zip(nodes, sample_nodes, nearest_nodes):
+            # nodes_plotted.append()
+            xlabel_string = 'Nodes: ' + str(nodes.index(node)+1) + ' / ' + str(len(nodes))
+            self.ax.set_xlabel(xlabel_string)
+            
             sample_vec = sample_node.vectorized_values()
-            #node_vec = node.vectorized_values()
-            #near_vec = nearest_node.vectorized_values()
+            node_vec = node.vectorized_values()
+            near_vec = nearest_node.vectorized_values()
 
-            circle1 = plt.Circle((sample_vec[0], sample_vec[1]), 0.05, color='r')
+
+            circle1 = plt.Circle((sample_vec[0], sample_vec[1]), 0.05, color='blue')
+            circle2 = plt.Circle((near_vec[0], near_vec[1]), 0.05, color='orange')
+            circle3 = plt.Circle((node_vec[0], node_vec[1]), 0.05, color='grey')
+            # nodes_plotted.append(circle3)
             self.ax.add_patch(circle1)
-            plt.pause(0.01)
+            plt.pause(0.00001)
+            self.ax.add_patch(circle2)
+            plt.pause(0.00001)
+            self.ax.add_patch(circle3)
+            plt.pause(0.00001)
+            self.connect_parent_and_child(node)
+            plt.pause(0.000001)
+            circle1.remove()
+            circle2.remove()
+            circle3.remove()
+            
+            # self.ax.add_patch(circle2)
+            
         plt.show()
         return
+        
 
     def connect_parent_and_child(self, child_node, color='grey', markersize = 2):
         joint_values_parent = child_node.predecessor.vectorized_values()
