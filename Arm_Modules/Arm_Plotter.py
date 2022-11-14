@@ -44,23 +44,23 @@ class Plotter:
 
     def plot_rover(self):
         wheel_r = 2.5; wheel_color = 'black'
-        Circle(wheel_r, np.array([-10,-5]), wheel_color).plot_circle(self.ax)
-        Circle(wheel_r, np.array([10,-5]), wheel_color).plot_circle(self.ax)
-        Circle(wheel_r, np.array([0,-5]), wheel_color).plot_circle(self.ax)
+        Circle(wheel_r, np.array([-5,-5]), wheel_color).plot_circle(self.ax)
+        Circle(wheel_r, np.array([5,-5]), wheel_color).plot_circle(self.ax)
         wheel_r = 2.2; wheel_color = 'grey'
-        Circle(wheel_r, np.array([-10,-5]), wheel_color).plot_circle(self.ax)
-        Circle(wheel_r, np.array([10,-5]), wheel_color).plot_circle(self.ax)
-        Circle(wheel_r, np.array([0,-5]), wheel_color).plot_circle(self.ax)
+        Circle(wheel_r, np.array([-5,-5]), wheel_color).plot_circle(self.ax)
+        Circle(wheel_r, np.array([5,-5]), wheel_color).plot_circle(self.ax)
 
         xy = np.array([-0.5,0])*self.robot.n_dof*self.robot.link_length + np.array([0,-5])
         Rectangle(xy, self.robot.n_dof*self.robot.link_length, 5).plot_rectangle(self.ax)
 
         wheel_r = 2.5; wheel_color = 'black'
-        Circle(wheel_r, np.array([-5,-5]), wheel_color).plot_circle(self.ax)
-        Circle(wheel_r, np.array([5,-5]), wheel_color).plot_circle(self.ax)
+        Circle(wheel_r, np.array([-10,-5]), wheel_color).plot_circle(self.ax)
+        Circle(wheel_r, np.array([10,-5]), wheel_color).plot_circle(self.ax)
+        Circle(wheel_r, np.array([0,-5]), wheel_color).plot_circle(self.ax)
         wheel_r = 2.2; wheel_color = 'grey'
-        Circle(wheel_r, np.array([-5,-5]), wheel_color).plot_circle(self.ax)
-        Circle(wheel_r, np.array([5,-5]), wheel_color).plot_circle(self.ax)
+        Circle(wheel_r, np.array([-10,-5]), wheel_color).plot_circle(self.ax)
+        Circle(wheel_r, np.array([10,-5]), wheel_color).plot_circle(self.ax)
+        Circle(wheel_r, np.array([0,-5]), wheel_color).plot_circle(self.ax)
         return
 
     def plot_targets(self):
@@ -97,11 +97,11 @@ class Plotter:
         plt.title("RRT C-Space")
         plt.xlabel(f"{len(nodes)} Nodes Generated Until Solution")
         # i=1
-        # name = mypath + "/Plots/C_Space_" + str(i) + ".png"
-        # while os.path.exists(name):
+        name = "Output/Plots/RRT_C-Space.png"
+        #while os.path.exists(name):
         #     i += 1
         # name = mypath + "/Plots/C_Space_" + str(i) + ".png"
-        # plt.savefig(name, dpi=399)
+        plt.savefig(name)
         plt.show()
         
         # plt.savefig(f"{mypath}/Plots/C_Space_{i}.png")
@@ -223,6 +223,9 @@ class Plotter:
         else:
             self.ax.plot(*self.frames[i], marker = 'o', color = '#cccccc', lw=4)
 
+        self.ax.set_title("Final Rover Arm Motion (W-Space)")
+        self.ax.set_xlabel("x [dm]")
+        self.ax.set_ylabel("y [dm]")
         self.ax.plot(self.gripper_positions[i][0], self.gripper_positions[i][1], marker='o', color='purple', markersize = 10)
         return
        

@@ -352,13 +352,13 @@ class Plotter:
             return img_list
         return
 
-    def Create_GIF(self, replot=False, clean=False):
-        if not replot:
-            img_list = self.plot()
-            name = self.output_path+"PRM_Animation"
-        else:
-            img_list = self.replot(clean)
-            name = self.output_path+"Dijkstra_Animation"
+    def Create_GIF(self):#, replot=False, clean=False):
+        #if not replot:
+        #    img_list = self.plot()
+        #    name = self.output_path+"PRM_Animation"
+        #else:
+        #    img_list = self.replot(clean)
+        #    name = self.output_path+"Dijkstra_Animation"
 
         i = 0
         while os.path.exists(name + "%i.gif" % i):

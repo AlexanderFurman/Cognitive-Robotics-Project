@@ -173,23 +173,14 @@ class Goal(Circle):
         return g
 
 def Euclidean_Distance(xy1,xy2):
-    '''
-    Complexity: O(1)
-    '''
     return math.dist(xy1, xy2)
 
 def Check_Circles_No_Collision(circle1,circle2):
-    '''
-    Complexity: O(1)
-    '''    
     if Euclidean_Distance(circle1.center,circle2.center) < circle1.radius + circle2.radius:
         return False # collision
     return True # no collision
 
 def Check_Point_Not_In_Circle(point,circle):
-    '''
-    Complexity: O(1)
-    '''    
     if Euclidean_Distance(point.center,circle.center) < circle.radius:
         return False # collision
     return True # no collision

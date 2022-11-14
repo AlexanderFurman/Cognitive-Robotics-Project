@@ -1,4 +1,8 @@
 import numpy as np
+#from Nav_Modules.Nav_Geometry import Euclidean_Distance as distance
+
+def distance(p1, p2):
+    return np.linalg.norm(p2-p1)
 
 class Environment:
     def __init__(self, robot, obstacles, targets, initial_state = None, epsilon = 0.5, is_floor = True, is_wall = False):
@@ -12,9 +16,6 @@ class Environment:
         self.is_wall = is_wall
         self.floor = np.array([[-1,0],[1,0]])*self.robot.n_dof*self.robot.link_length + np.array([[0,-0.1],[0,-0.1]]) if self.is_floor else None
         self.wall = np.array([[0,-1],[0,1]])*self.robot.n_dof*self.robot.link_length + np.array([[-0.1,0],[-0.1,0]]) if self.is_wall else None
-
-    def distance(self, p1, p2):
-        return np.linalg.norm(p2-p1)
 
     def query_boundary_collision_temporary(self):
         if self.is_floor:
@@ -68,12 +69,12 @@ class Environment:
 
     def query_link_collision(self, radius, o, p1, p2):
         min_dist = np.Inf
-        max_dist = max(self.distance(o,p1), self.distance(o,p2))          
+        max_dist = max(distance(o,p1), distance(o,p2))          
 
         if np.dot(p1-o, p1-p2) > 0 and np.dot(p2-o,p2-p1) > 0:
-            min_dist = 2*self.triangle_area(o, p1, p2)/self.distance(p1, p2)
+            min_dist = 2*self.triangle_area(o, p1, p2)/distance(p1, p2)
         else:
-            min_dist = min(self.distance(o, p1), self.distance(o,p2))
+            min_dist = min(distance(o, p1), distance(o,p2))
 
         if min_dist <= radius and max_dist >= radius:
             return True
@@ -93,6 +94,6 @@ class Environment:
 
     def query_robot_at_goal(self):
         for target in self.targets:
-            if self.distance(self.robot.gripper_position, target) <= self.epsilon:
+            if distance(self.robot.gripper_position, target) <= self.epsilon:
                 return True
         return False

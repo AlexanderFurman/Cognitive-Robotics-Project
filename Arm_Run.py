@@ -1,12 +1,12 @@
 import numpy as np
 from Arm_Modules.Arm_Robot import JointState, Robot
 from Arm_Modules.Arm_Plotter import Plotter
-from Arm_Modules.Arm_Environment import Environment
+from Arm_Modules.Arm_Environment import Environment, distance
 from Arm_Modules.Arm_RRT_Planner import RRTPlanner
-from Nav_Modules.Nav_Geometry import Obstacle
+from Nav_Modules.Nav_Geometry import Obstacle#, Euclidean_Distance
 
-def distance(p1, p2):
-    return np.linalg.norm(p2-p1)
+#def distance(p1, p2):
+#    return np.linalg.norm(p2-p1)
 
 def run():
     robot = Robot(2)#, link_length=5)
@@ -42,7 +42,7 @@ def run():
             current_pos = pos
 
     print("Gripper position found which is closest to goal: ", current_pos)
-    print(f"Min. distance to target: {min_length:0.3f}\n")
+    print(f"Min. distance to target: {min_length:0.5f}\n")
     # print(paths[0][-1].vectorized_values())
     #print(paths[0][i].vectorized_values() for i in range(len(paths[0])))
     nodes = paths[0]

@@ -14,6 +14,8 @@ Finally, at each goal point we show the motion planning procedure for how the ro
 [1] Wenjun Cheng & Yuhui Gao. ["Using PDDL to Solve Vehicle Routing Problems"](https://hal.inria.fr/hal-01383334). *8th International
 Conference on Intelligent Information Processing (IIP)*, 2014.
 
-[2] Alexey Klochay, ["Implementing Dijkstra’s Algorithm in Python"](https://www.udacity.com/blog/2021/10/implementing-dijkstras-algorithm-in-python.html). *Udacity*, 2021. 
+[2] Tim Chinenov. ["Robotic Path Planning: RRT and RRT*"](https://theclassytim.medium.com/robotic-path-planning-rrt-and-rrt-212319121378). 2019. 
 
-[3] Atsushi Sakai, Daniel Ingram, Joseph Dinius, Karan Chawla, Antonin Raffin & Alexis Paques, ["PythonRobotics: A Python Code Collection of Robotics Algorithms"](https://arxiv.org/abs/1808.10703). 2018. GitHub: https://github.com/AtsushiSakai/PythonRobotics
+[3] Alexey Klochay. ["Implementing Dijkstra’s Algorithm in Python"](https://www.udacity.com/blog/2021/10/implementing-dijkstras-algorithm-in-python.html). *Udacity*, 2021. 
+
+[4] Atsushi Sakai, Daniel Ingram, Joseph Dinius, Karan Chawla, Antonin Raffin & Alexis Paques. ["PythonRobotics: A Python Code Collection of Robotics Algorithms"](https://arxiv.org/abs/1808.10703). 2018. GitHub: https://github.com/AtsushiSakai/PythonRobotics
