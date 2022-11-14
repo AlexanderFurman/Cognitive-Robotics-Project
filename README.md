@@ -1,7 +1,9 @@
 # Integrated Task & Motion Planning for a Simplified Mars Rover Exploration Problem
 ## Cognitive Robotics Spring 2022 Final Project - Alex Furman & Yotam Granov
 
-![](https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Rover.jpg)
+<p align="center">
+  <img src=https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Rover.jpg>
+</p>
 
 ## (0) Introduction
 ### Abstract
@@ -20,7 +22,7 @@ In the first part of the problem, we want to plan the path of the rover between 
 ### Initial Map
 First, the initial map of the environment for the navigation problem is produced. It is shown in the following figure:
 <p align="center">
-  <img src=https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Initial_Map.png/>
+  <img src=https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Initial_Map.png>
 </p>
 
 The rover's start point is represented by the blue point, the goal zones are the green circles, and the obstacles are the dark orange circles. The free space of the rover is colored light orange.
@@ -36,7 +38,9 @@ Once we have our PRM, we would like to find the shortest paths connecting each g
 ![](https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Dijkstra_Animation.gif)
 
 ### Travelling Salesman Problem
-![](https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Simplified_Graph.png)
+<p align="center">
+  <img src=https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Simplified_Graph.png>
+</p>
 
 ### Final Trajectory
 ![](https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Final_Trajectory_Animation.gif)
@@ -44,7 +48,9 @@ Once we have our PRM, we would like to find the shortest paths connecting each g
 ## (2) Arm Motion Planning
 
 ### Rapidly Exploring Random Trees (RRT)
-![](https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/RRT_C-Space.png)
+<p align="center">
+  <img src=https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/RRT_C-Space.png>
+</p>
 
 ### Final Trajectory
 ![](https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Arm_Animation.gif)
