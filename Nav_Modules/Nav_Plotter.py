@@ -102,8 +102,8 @@ class Plotter:
             plt.show()
         if self.save_gif:
             for j in range(0,10):
-                img_list.append('Output/Temp_Images/' + str(i+j) + '.png')
-                shutil.copyfile('Output/Temp_Images/' + str(i+j) + '.png', 'Output/Temp_Images/' + str(i+j+1) + '.png')
+                img_list.append('Output/Temp_Images/' + str(i+j+1) + '.png')
+                shutil.copyfile('Output/Temp_Images/' + str(i) + '.png', 'Output/Temp_Images/' + str(i+j+1) + '.png')
             Create_GIF(img_list, "kNN_Animation", self.output_path)
             print("\t...Done")
         return
@@ -201,7 +201,7 @@ class Plotter:
 
     def plot_Dijkstra(self, axis=None, clean=False):
         """
-        Plots the map (.png or .gif) showing the paths obtained by the Dijstrka algorithm, including those paths, the PRM (optinal), and the initial map contents
+        Plots the map (.png or .gif) showing the paths obtained by the Dijkstra algorithm, including those paths, the PRM (optinal), and the initial map contents
         :param axis: axis of the subplot to add the plot to
         :param clean: if True, then only the Dijkstra paths are shown, otherwise the whole PRM is shown as well
         """
@@ -299,6 +299,9 @@ class Plotter:
         return
 
     def plot4(self):
+        """
+        Plots the 4 first important graphs: initial map, PRM map, Dijkstra map, and simplified TSP graph
+        """
         _, axis = plt.subplots(2, 2)
         # Initial Map - [0,0]
         self.plot_init(axis=axis[0,0])
@@ -313,8 +316,7 @@ class Plotter:
 
     def plot_final(self):
         """
-        Plots the map (.png or .gif) showing the paths obtained by the Dijstrka algorithm, including those paths, the PRM (optinal), and the initial map contents
-        :param axis: axis of the subplot to add the plot to
+        Plots the final trajectory obtained by the classical planner (.png or .gif), including the initial map contents
         """
         _, axis = plt.subplots()
         axis.set_ylim(0,self.map.height)
@@ -372,6 +374,12 @@ class Plotter:
         return
 
 def Create_GIF(img_list, name, output_path):
+    """
+    Creates a .gif animation from a list of image files (.png)
+    :param img_list: List of the paths of the images to concatenate
+    :param name: Name for the .gif
+    :param output_path: Path for the output folder
+    """
     with imageio.get_writer(output_path + name + ".gif", mode='I') as writer:
         for filename in img_list:
             image = imageio.imread(filename)

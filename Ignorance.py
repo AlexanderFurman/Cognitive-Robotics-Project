@@ -65,6 +65,13 @@ def Create_Start_Node(obs, goals):
     return start
 
 def CreateOutputFolder(save_imgs,save_gifs,save_pddl):
+    """
+    Creates the necessary output folders (if they don't already exist)
+    :param save_imgs: True if we want to save our images (.png)
+    :param save_gifs: True if we want to save our animations (.gif)
+    :param save_pddl: True if we want to save our PDDL files (.pddl)
+    :returns: path of the output folder (called "Output")
+    """
     if not os.path.exists("Output"):
         os.mkdir("Output")
 

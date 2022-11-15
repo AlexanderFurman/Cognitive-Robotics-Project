@@ -6,14 +6,21 @@ from Arm_Modules.Arm_RRT_Planner import RRTPlanner
 from Nav_Modules.Nav_Geometry import Obstacle
 
 def Arm_Run(output_path, save_img=False, save_gif=False, show_anim=False):
+    """
+    Runs the rover arm simulation
+    :param output_path: path of the output folder
+    :param save_img: True if we want to save our images (.png)
+    :param save_gif: True if we want to save our animations (.gif)
+    :param show_anim: True if we want to show the animations while the script is running
+    """
     robot = Robot(2)
     obstacle1 = Obstacle(10, np.array([13,23]))
     obstacle2 = Obstacle(10, np.array([20, 20]))
     obstacle3 = Obstacle(10, np.array([25,0]))
-    obstacle4 = Obstacle(3, np.array([10,12]))
+    #obstacle4 = Obstacle(3, np.array([10,12]))
     obstacle5 = Obstacle(3, np.array([13,13]))
     obstacle6 = Obstacle(3, np.array([16,4]))
-    target1 = np.array([0,11])
+    #target1 = np.array([0,11])
     target2 = np.array([16,8])
     target3 = np.array([-1, 7])
     environment = Environment(robot, [obstacle1, obstacle2, obstacle3, obstacle5, obstacle6], [target2], epsilon = 1, is_wall = False, is_floor = True)

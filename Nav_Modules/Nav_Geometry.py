@@ -10,6 +10,7 @@ class Rectangle:
         self.origin = origin
 
     def plot_rectangle(self, ax):
+        """Plots the rectangle object"""
         rectangle = plt.Rectangle(xy=self.origin, width=self.width, height=self.height, color=self.color)
         ax.add_patch(rectangle)
         return
@@ -31,6 +32,7 @@ class Edge:
             self.cost = cost
 
     def __eq__(self, other):
+        """Defines the equivalence of two edges based on the positions of the nodes they connect"""
         count = 0
         for i in range(2):
             if (self.xy1[i] == other.xy1[i] and self.xy2[i] == other.xy2[i]) or (self.xy1[i] == other.xy2[i] and self.xy2[i] == other.xy1[i]):
@@ -40,6 +42,7 @@ class Edge:
         return False
 
     def Highlight_Nodes(self, ax):
+        """Highlights (changes the colors of) the nodes connected by the edge"""
         for n in self.nodes:
             if not isinstance(n,Start_Node) and not isinstance(n,Goal_Node):
                 n.plot_node(ax, color='yellow')
@@ -50,6 +53,7 @@ class Edge:
         return
 
     def Check_Edge_Obstacle_Collision(self, obstacle):
+        """Checks if the edge collides with a given obstacle"""
         p1 = self.xy1; p2 = self.xy2; o = obstacle.center
         o_p1 = self.Vector_Diff(p1, o)
         o_p2 = self.Vector_Diff(p2, o)
@@ -69,14 +73,17 @@ class Edge:
             return False # no collision
     
     def Vector_Diff(self, p2, p1):
+        """Defines the difference of two vectors"""
         return [p2[i]-p1[i] for i in range(len(p1))]
 
     def Triangle_Area(self, a, b, c):
+        """Calculates the area of a triangle created by three points"""
         ab = np.array([b[0]-a[0], b[1]-a[1]])
         ac = np.array([c[0]-a[0], c[1]-a[1]])
         return abs(np.cross(ab, ac))/2
     
     def plot_edge(self, ax, color=None):
+        """Plots the edge object"""
         if color==None:
             color = self.color
         xdata = [self.xy1[0], self.xy2[0]]; ydata = [self.xy1[1], self.xy2[1]]
@@ -94,9 +101,11 @@ class Node:
         self.plotted = False
 
     def __str__(self):
+        """Descriptor dunder method"""
         return str(self.center[0]) + "," + str(self.center[1]) + "," + str(self.cost) + "," + str(self.parent_index)
 
     def plot_node(self, ax, color=None, s=25, zorder=10):
+        """Plots the node object"""
         if color == None:
             c = self.color
         else:
@@ -109,6 +118,7 @@ class Start_Node(Node):
         super().__init__(center, name='S', color='blue')
     
     def plot_node(self, ax, color='blue'):
+        """Plots the node object"""
         super().plot_node(ax, color=color, s=50, zorder=15)
         return
 
@@ -117,6 +127,7 @@ class Goal_Node(Node):
         super().__init__(center, name=name, color='#154f30')
 
     def plot_node(self, ax, color='#154f30'):
+        """Plots the node object"""
         super().plot_node(ax, color=color, s=50, zorder=15)
         return
 
@@ -126,7 +137,7 @@ class Graph:
         self.graph = {}
     
     def Get_Outgoing_Edges(self, node):
-        "Returns the neighbors of a node."
+        """Returns the neighbors of a node"""
         connections = []
         for out_node in self.nodes:
             if self.graph[node].get(out_node, False) != False:
@@ -134,7 +145,7 @@ class Graph:
         return connections
     
     def Get_Edge_Value(self, node1, node2):
-        "Returns the value of an edge between two nodes."
+        "Returns the value of an edge between two nodes"
         return self.graph[node1][node2]
 
 class Circle:
@@ -144,6 +155,7 @@ class Circle:
         self.color = color
 
     def plot_circle(self, ax):
+        """Plots the circle object"""
         circle = plt.Circle((self.center[0], self.center[1]), self.radius, color=self.color)
         ax.add_patch(circle)
         return
@@ -157,6 +169,7 @@ class Goal(Circle):
         super().__init__(radius, center, color='green')
 
     def Create_Goal_Node(self, name):
+        """Creates a random goal node inside the goal zone"""
         min_x = self.center[0] - self.radius; max_x = self.center[0] + self.radius
         min_y = self.center[1] - self.radius; max_y = self.center[1] + self.radius
         no_col = True
@@ -169,19 +182,44 @@ class Goal(Circle):
         return g
 
 def Euclidean_Distance(xy1,xy2):
+    """
+    Calculates the Euclidean distance between two points
+    :param xy1: XY coordinates of the first point
+    :param xy2: XY coordinates of the second point
+    :returns: The Euclidean distance between the points
+    """
     return math.dist(xy1, xy2)
 
 def Check_Circles_No_Collision(circle1,circle2):
+    """
+    Checks if there is a collision between two circles
+    :param circle1: First circle (object)
+    :param circle2: Second circle (object)
+    :returns: True if there is no collision, otherwise False
+    """
     if Euclidean_Distance(circle1.center,circle2.center) < circle1.radius + circle2.radius:
         return False # collision
     return True # no collision
 
 def Check_Point_Not_In_Circle(point,circle):
+    """
+    Checks if a point is located inside a circle
+    :param point: The point(object)
+    :param circle: The circle (object)
+    :returns: True if the point is not inside the circle, otherwise False
+    """
     if Euclidean_Distance(point.center,circle.center) < circle.radius:
         return False # collision
     return True # no collision
 
 def Get_Edge(node1, node2, edges):
+    """
+    Gets the edge connecting two nodes in a graph (given the list of all edges in the graph)
+    :param node1: First node
+    :param node2: Second node
+    :param edges: List of edges in the graph
+    :returns: The edge connecting the two nodes, if it exists (otherwise returns -1)
+    """
     for e in edges:
         if Edge(node1,node2) == e:
             return e

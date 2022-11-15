@@ -106,7 +106,7 @@ class Plotter:
             plt.savefig(name)
         if not self.show_anim:
             plt.show()
-        return  
+        return
 
     def rrt_plot(self, path, nodes, sample_nodes, nearest_nodes):
         self.fig, self.ax = plt.subplots()
@@ -139,13 +139,17 @@ class Plotter:
             circle2 = plt.Circle((near_vec[0], near_vec[1]), 0.05, color='orange')
             circle3 = plt.Circle((node_vec[0], node_vec[1]), 0.05, color='grey')
             self.ax.add_patch(circle1)
-            plt.pause(0.001)
+            if self.show_anim:
+                plt.pause(0.001)
             self.ax.add_patch(circle2)
-            plt.pause(0.001)
+            if self.show_anim:
+                plt.pause(0.001)
             self.ax.add_patch(circle3)
-            plt.pause(0.001)
+            if self.show_anim:
+                plt.pause(0.001)
             self.connect_parent_and_child(node)
-            plt.pause(0.001)
+            if self.show_anim:
+                plt.pause(0.001)
             circle1.remove()
             circle2.remove()
             circle3.remove()
@@ -166,7 +170,8 @@ class Plotter:
                 self.connect_parent_and_child(node, color='lime')
             xlabel_string_new = xlabel_string + ', Final Path Nodes: ' + str(idx_n+1) + ' / ' + str(len(path))
             self.ax.set_xlabel(xlabel_string_new)
-            plt.pause(0.001)
+            if self.show_anim:
+                plt.pause(0.001)
             if self.save_gif:
                 new_idx = idx+idx_n
                 img_list.append('Output/Temp_Images/' + str(new_idx) + '.png')
