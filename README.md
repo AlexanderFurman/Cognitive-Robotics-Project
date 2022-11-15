@@ -2,7 +2,7 @@
 ## Cognitive Robotics Spring 2022 Final Project - Alex Furman & Yotam Granov
 
 <p align="center">
-  <img src=https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Rover.jpg>
+  <img src="https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Rover.jpg">
 </p>
 
 ## (0) Introduction
@@ -36,7 +36,7 @@ In the first part of the problem, we want to plan the path of the rover between 
 ### Initial Map
 First, the initial map of the environment for the navigation problem is produced. It is shown in the following figure:
 <p align="center">
-  <img src=https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Initial_Map.png>
+  <img src="https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Initial_Map.png" />
 </p>
 
 The rover's start point is represented by the blue point, the goal zones are the green circles, and the obstacles are the dark orange circles. The free space of the rover is colored light orange.
@@ -50,6 +50,7 @@ Next, we sample a certain number of points (the default is 200) from the rover's
 All of the sampled points in the free space are initially shown in black, and the node that is cuurently being assesses for its k-nearest neighbors is highlighted yellow. These neighbors are then highlighted in orange (apologies for the color clashing). Once we have the neighbors identified for every single sample, we connected the samples to their neighbors (these connections are represented using edges) and then run a collision detection algorithm to check whether any of the produced edges collide with any of the obstacles. 
 
 In the following animation, we see the initial sampling process, where the black points represent the sample nodes that were produced (using uniform random sampling), and then the production of valid edges using the kNN and collision detection algorithms:
+
 <p align="center">
   <img src="https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/PRM_Animation.gif" alt="animated" />
 </p>
@@ -65,7 +66,7 @@ Once we have our PRM, we would like to find the shortest paths connecting each g
 ### Travelling Salesman Problem
 Next, we simplify the paths obtained by the Dijkstra algorithm into a simple weighted undirected graph, exemplified in the figure below:
 <p align="center">
-  <img src=https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Simplified_Graph.png>
+  <img src="https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Simplified_Graph.png" />
 </p>
 We then treat this graph as a weighted Travelling Salesman Problem (TSP), but one where each goal node in the graph must be visited *at least* once (and not only once, as is usually constrained for TSP's), and we can solve this using classical planning methods by representing the distances between nodes as the action cost for moving between those nodes. Our classical planning representation (which we do in PDDL using the Unified Planning Framework $^{[1]}$ for Python) is conducted as follows:
 
@@ -108,7 +109,8 @@ There are many variations on the RRT algorithm, one specifically worth mentionin
 
 #### Search in C-Space 
 <p align="center">
-  <img src="https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/RRT_Animation.gif" alt="animated" />
+  <img src="https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/RRT_Animation.gif" alt="animated" width="500" />
+  <img src="https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/RRT_C-Space.png" width="500" />
 </p>
 
 ### Final Arm Trajectory
