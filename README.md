@@ -14,22 +14,20 @@ To solve this problem, we sampled a large number of points in the rover's config
 Finally, at each goal point we show the motion planning procedure for how the rover's arm will retrieve the geological sample without colliding with any of the cave's walls, and we do so using the Rapidly Exploring Random Trees (RRT) algorithm. We also implement the optimized RRT algorithm (known as RRT*) for this same purpose, and compare the efficiency of the two algorithms when applied to our problem.
 
 ### Running the Code
-In order to run the code, similar run the `python main.py` command from the command line with any of the following command line arguments:
-
+In order to run the code, simply run the command `python Ignorance.py` from the command line with any of the following command line arguments:
 ```
--h, --help  show this help message and exit
-  -nav NAV    Run the navigation simulation (default: True)
-  -arm ARM    Run the arm simulation (default: True)
-  -n N        Number of goals to create (default: 3)
-  -o O        Number of obstacles to create (default will randomize the number of obstacles) (default: None)
-  -s S        Number of samples for PRM (default: 200)
-  -a A        Show animations (default: False)
-  -k K        Show the k-nearest neighbors animation (default: False)
-  -p P        Save .pddl files (default: False)
-  -i I        Save .png image files (default: False)
-  -g G        Save .gif animation files (default: False)
+  -h          Show this help message and exit
+  -nav        Run the navigation simulation (default: True)
+  -arm        Run the arm simulation (default: True)
+  -n          Number of goals to create (default: 3)
+  -o          Number of obstacles to create (default will randomize the number of obstacles) (default: None)
+  -s          Number of samples for PRM (default: 200)
+  -a          Show animations (default: False)
+  -k          Show the k-nearest neighbors animation (default: False)
+  -p          Save .pddl files (default: False)
+  -i          Save .png image files (default: False)
+  -g          Save .gif animation files (default: False)
 ```
-
 *Dependencies:* Python 3, `numpy`, `matplotlib`, `os`, `imageio`, `shutil`, `networkx`, `copy`, `math`, `random`, `sys`, `scipy`, `warnings`, `unified_planning` (version=0.4.2.362.dev1), `unified_planning[fast-downward]`, `argparse`
 
 ## (1) Rover Navigation
@@ -64,17 +62,17 @@ Next, we simplify the paths obtained by the Dijkstra algorithm into a simple wei
 </p>
 We then treat this graph as a weighted Travelling Salesman Problem (TSP), but one where each goal node in the graph must be visited *at least* once (and not only once, as is usually constrained for TSP's), and we can solve this using classical planning methods by representing the distances between nodes as the action cost for moving between those nodes. Our classical planning representation (which we do in PDDL using the Unified Planning Framework) is conducted as follows:
 
-*Domain*
+##### Domain
 * There is a `rover` type and a `location` type, as well as a `start` type which extends `location` as well as a set of goal types (`goal{i}`, where $i$ is a natural number) unique to each goal node (this was part of a messy workaround that we needed to implement) which also extend the `location` type
 * The fluents (which are boolean, i.e. predicates) indicate the current location (node) of the rover (called `rover-at(?rover, ?location)`), as well as whether or not the rover has already visited a certain node (called `visited ?rover ?location`)
 * A numeric fluent called `total-cost` records the sum of the costs of the actions in the plan - we will ask our planner to minimize this value in its solution
 * The possible actions are encoded as a set of actions called `move_{i}_{j}`, which take the rover from node $i$ to node $j$ - the reason we didn't just create one `move` action for all nodes is because we needed to encode the action costs (given by the length of the shortest path between those nodes) in a compatible way for the UPF (as part of our messy workaround)
   * `move{i}_{j}(?rover ?i ?j)` has precondition `rover_at(?rover ?i)` and effects $\lnot$`(rover_at ?rover ?i)`$\land$`(rover_at ?rover ?j)`$\land$`(visited ?rover ?j)`$\land$`(increase (total-cost) {cost{i}{j}})))`
-
-*Problem*
+  
+##### Problem
 * We instantiate one object per type (one rover of type `rover`, one start point of type `start`, and a set of start points `g{i}` of type `goal{i}`)
 * We set the initial state such that the rover is at the start point, the rover has visited the start point, and the total cost is zero - i.e. `(rover_at rover s) (visited rover s) (= (total-cost) 0))`
-* We set the goal state such that the rover is back at the start point and that all of the goal points have been visited - i.e `(rover_at ?rover ?s)`$\land$`(visited ?rover ?g{j})`$\forall$ goals
+* We set the goal state such that the rover is back at the start point and that all of the goal points have been visited - i.e. `(rover_at ?rover ?s)`$\land$`(visited ?rover ?g{j})`$\forall g_{j}\in{goals}$
 * Finally, we declare the quality metric to be the minimization of the total cost of the actions in the plan (i.e. the `total-cost` fluent)
 
 An example of these `.pddl` files can be found in the `Graphics` folder. Once the problem is represented in PDDL, we use the Fast Downward Planner (with optimality guarantees) in order to obtain the optimal solution to our TSP. Using the plan it gives, we can finally tell our rover what trajectory to take in order to conduct its navigation and complete its tasks.
