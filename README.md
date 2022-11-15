@@ -50,7 +50,6 @@ Next, we sample a certain number of points (the default is 200) from the rover's
 All of the sampled points in the free space are initially shown in black, and the node that is cuurently being assesses for its k-nearest neighbors is highlighted yellow. These neighbors are then highlighted in orange (apologies for the color clashing). Once we have the neighbors identified for every single sample, we connected the samples to their neighbors (these connections are represented using edges) and then run a collision detection algorithm to check whether any of the produced edges collide with any of the obstacles. 
 
 In the following animation, we see the initial sampling process, where the black points represent the sample nodes that were produced (using uniform random sampling), and then the production of valid edges using the kNN and collision detection algorithms:
-
 <p align="center">
   <img src="https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/PRM_Animation.gif" alt="animated" />
 </p>
@@ -107,7 +106,7 @@ It is important to choose the right step-size. Too big a step-size causes a larg
 
 There are many variations on the RRT algorithm, one specifically worth mentioning here is RRT*. RRT* is RRT with 'rewiring' capabilities. After adding some node to the tree, the node looks for its closest neighbours within a specified radius. Once it finds these neighbours, it checks if connecting to the closest neighbour would result in collision. If it does, it moves on to the next closest neighbour. If there is not collision, the node removes its previous parent, and is adopted by this closest node. This results in a shorter trajectory the robot arm needs to execute. In fact, RRT* ensures an asymptotically optimal solution $^{[5]}$.
 
-#### Search in C-Space 
+### Search in C-Space 
 <p align="center">
   <img src="https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/RRT_Animation.gif" alt="animated" width="500" />
   <img src="https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/RRT_C-Space.png" width="500" />
