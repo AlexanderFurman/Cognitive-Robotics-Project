@@ -88,7 +88,6 @@ def main():
         N_obs = random.randint(5, 20)
 
     print("** Starting the Ignorance simulation **\n")
-
     path = CreateOutputFolder(save_imgs,save_gifs,save_pddl)
     map = Map()
     obs = Create_Obstacles(N_obs)
@@ -115,7 +114,7 @@ def main():
     plotter.plot_final()
 
     if show_arm:
-        Arm_Run(output_path=path, save_img=save_imgs, save_gif=True)
+        Arm_Run(output_path=path, save_img=save_imgs, save_gif=save_gifs, show_anim=show_animation)
     print("** Ignorance simulation complete! **")
     return
 

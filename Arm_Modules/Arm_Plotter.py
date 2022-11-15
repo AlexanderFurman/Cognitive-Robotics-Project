@@ -8,8 +8,12 @@ from Arm_Modules.Arm_Robot import JointState
 from Nav_Modules.Nav_Geometry import Rectangle, Circle
 
 class Plotter:
-    def __init__(self, environment):
+    def __init__(self, environment, output_path=None, save_img=False, save_gif=False, show_anim=False ):
         self.environment = environment
+        self.output_path = output_path
+        self.save_img = save_img
+        self.save_gif = save_gif
+        self.show_anim=show_anim
         self.robot = environment.robot
         self.obstacles = environment.obstacles
         self.targets = environment.targets
@@ -76,7 +80,7 @@ class Plotter:
         array.append(ys)
         return
 
-    def show_rrt(self, nodes, paths, output_name):
+    def show_rrt(self, nodes, paths):
         self.ax.clear()
         plt.grid()
         self.ax.set_ylim(self.robot.min_joint_limit,self.robot.max_joint_limit)
@@ -84,7 +88,6 @@ class Plotter:
 
         root_node = nodes.pop(0)
         root_vals = root_node.vectorized_values()
-        print("Root values: ", root_vals)
         plt.plot(root_vals[0], root_vals[1])
         for node in nodes:
             self.connect_parent_and_child(node)
@@ -96,30 +99,23 @@ class Plotter:
                 self.connect_parent_and_child(node, 'g', 5)
         plt.title("RRT C-Space")
         plt.xlabel(f"{len(nodes)} Nodes Generated Until Solution")
-        # i=1
-        name = output_name+"RRT_C-Space.png"
-        #while os.path.exists(name):
-        #     i += 1
-        # name = mypath + "/Plots/C_Space_" + str(i) + ".png"
-        plt.savefig(name)
+        if self.save_img:
+            name = self.output_path + "RRT_C-Space.png"
+            plt.savefig(name)
         plt.show()
-        
-        # plt.savefig(f"{mypath}/Plots/C_Space_{i}.png")
         return  
 
-    def rrt_plot(self, nodes, sample_nodes, nearest_nodes):
-        self.ax.clear()
+    def rrt_plot(self, path, nodes, sample_nodes, nearest_nodes):
+        _, axis = plt.subplots()
+        self.ax = axis
         plt.grid()
         self.ax.set_ylim(-np.pi,np.pi)
         self.ax.set_xlim(-np.pi,np.pi)
-        # nodes_plotted = []
 
         root_node = nodes.pop(0)
         root_vals = root_node.vectorized_values()
-        print("root_vals = ", root_vals)
         plt.plot(root_vals[0], root_vals[1], 0.05, color='grey')
         for (node, sample_node, nearest_node) in zip(nodes, sample_nodes, nearest_nodes):
-            # nodes_plotted.append()
             xlabel_string = 'Nodes: ' + str(nodes.index(node)+1) + ' / ' + str(len(nodes))
             self.ax.set_xlabel(xlabel_string)
             
@@ -127,29 +123,35 @@ class Plotter:
             node_vec = node.vectorized_values()
             near_vec = nearest_node.vectorized_values()
 
-
             circle1 = plt.Circle((sample_vec[0], sample_vec[1]), 0.05, color='blue')
             circle2 = plt.Circle((near_vec[0], near_vec[1]), 0.05, color='orange')
             circle3 = plt.Circle((node_vec[0], node_vec[1]), 0.05, color='grey')
-            # nodes_plotted.append(circle3)
             self.ax.add_patch(circle1)
-            plt.pause(0.00001)
+            plt.pause(0.001)
             self.ax.add_patch(circle2)
-            plt.pause(0.00001)
+            plt.pause(0.001)
             self.ax.add_patch(circle3)
-            plt.pause(0.00001)
+            plt.pause(0.001)
             self.connect_parent_and_child(node)
-            plt.pause(0.000001)
+            plt.pause(0.001)
             circle1.remove()
             circle2.remove()
             circle3.remove()
-            
-            # self.ax.add_patch(circle2)
-            
+        start_vec = path[0].vectorized_values()
+        goal_vec = path[-1].vectorized_values()
+        circle1 = plt.Circle((start_vec[0], start_vec[1]), 0.1, color='blue')
+        circle2 = plt.Circle((goal_vec[0],goal_vec[1]), 0.1, color='green')
+        self.ax.add_patch(circle1)
+        self.ax.add_patch(circle2)
+        for node in path:
+            self.connect_parent_and_child(node, color='lime')
+            # xlabel_string = 'Nodes: ' + str(len(paths)) + ' / ' + str(len(path) + ', ')
+            #self.ax.set_xlabel(xlabel_string)
+            plt.pause(0.001)
+
         plt.show()
         return
         
-
     def connect_parent_and_child(self, child_node, color='grey', markersize = 2):
         joint_values_parent = child_node.predecessor.vectorized_values()
         joint_values_child= child_node.vectorized_values()
@@ -206,7 +208,7 @@ class Plotter:
         return
 
     def generate_trajectory(self, path, framerate = 15, n_frames = 75, traj_type = 'linear', output_name=None):
-        plt.cla()
+        #plt.cla()
         for i in range(len(path)-1):
             waypoints = self.generate_config_waypoints(path[i], path[i+1], n_frames, traj_type)
             for i in range(len(waypoints)):
@@ -220,13 +222,23 @@ class Plotter:
                 self.collision_in_frame.append(self.environment.query_robot_collision())
                 self.goal_in_frame.append(self.environment.query_robot_at_goal())
         
-        print("Animating...")
-        ani = FuncAnimation(self.fig, self.animate, frames=len(self.frames), interval=1000/framerate, repeat=False)
-        i = 0
-        while os.path.exists(output_name+"Arm_Animation%i.gif" % i):
-            i += 1
-        ani.save(output_name+"Arm_Animation%i.gif" %i, dpi=300, writer=PillowWriter(fps=framerate))
-        print("Complete!")
+        if self.show_anim:
+            print("Animating...")
+            _, axis = plt.subplots()
+            self.ax = axis
+            for i in range(len(self.frames)):
+                self.animate(i)
+                plt.pause(0.01)
+            plt.show()
+
+        if self.save_gif:
+            print("in save gif")
+            ani = FuncAnimation(self.fig, self.animate, frames=len(self.frames), interval=1000/framerate, repeat=False)
+            i = 0
+            while os.path.exists(output_name+"Arm_Animation%i.gif" % i):
+                i += 1
+            ani.save(output_name+"Arm_Animation%i.gif" %i, dpi=300, writer=PillowWriter(fps=framerate))
+            print("Complete!")
         return
 
     def animate(self, i):
@@ -237,7 +249,6 @@ class Plotter:
         self.plot_obstacles()
         self.plot_targets()
         self.plot_rover()
-        #self.plot_boundaries()
         if self.collision_in_frame[i] is True:
             self.ax.plot(*self.frames[i], marker = 'o', color = 'r', lw=4)
         elif self.goal_in_frame[i] is True:

@@ -50,10 +50,6 @@ class Edge:
         return
 
     def Check_Edge_Obstacle_Collision(self, obstacle):
-        '''
-        Assuming point robot.
-        Complexity: O(?)
-        '''
         p1 = self.xy1; p2 = self.xy2; o = obstacle.center
         o_p1 = self.Vector_Diff(p1, o)
         o_p2 = self.Vector_Diff(p2, o)

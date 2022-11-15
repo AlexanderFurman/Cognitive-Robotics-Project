@@ -50,9 +50,7 @@ class RRTPlanner:
                 print(f"Finished running the RRT Algorithm, after {i} iterations.\n")
                 return self.tree
             random_node = self.sample_random_state()
-            # self.random_samples.append(random_node)
             nearest_node = self.tree.nearest_neighbour(random_node)
-            # self.nearest_nodes.append(nearest_node)
             new_node = self.extend(random_node, nearest_node)
 
             if not self.query_state_cause_collision(new_node.vectorized_values()) and not self.tree.query_node_in_graph(new_node):
