@@ -16,6 +16,8 @@ Finally, at each goal point we show the motion planning procedure for how the ro
 ### Running the Code
 TO DO
 
+*Dependencies:* Python 3, `numpy`, `matplotlib`, `os`, `imageio`, `shutil`, `networkx`, `copy`, `math`, `random`, `sys`, `scipy`, `warnings`, `unified_planning`, `unified_planning[fast-downward]`, `argparse`
+
 ## (1) Rover Navigation
 In the first part of the problem, we want to plan the path of the rover between its starting point and a variety of goal zones (by default there are 3 such zones), all of which are randomly generated at the start of a run. There are a variety of obstacles (represented as circles of varying sizes) which are also randomly generated across the map - the number of obstacles can either be stochastic (between 5 and 20) or determined by the user. The rover, which is treated as a point for the sake of simplicity, must find a path that begins at the start node (represented as a single point), passes through each of the goal zones (represented as circles of random radii) at least once, and terminates to the start node - all without colliding with any obstacles.
 
@@ -29,13 +31,17 @@ The rover's start point is represented by the blue point, the goal zones are the
 
 ### Probabilistic Roadmap (PRM)
 Next, we sample a certain number of points (the default is 200) from the rover's workspace, including one point per goal zone (this becomes the goal node that will be added to the roadmap, and they are represented in dark green). We use a k-Nearest Neighbors (kNN) algorithm (the default k is 5) to connect each sample to its nearest neighbors (i.e. create an edge between them), and then we run a collision detection algorithm to check whether any of the produced edges collide with any of the obstacles. In the following animation, we first see the sampling process, where the black points represent the sample nodes that were produced (using uniform random sampling). The second part of the animation shows the production of valid edges using the kNN and collision detection algorithms:
-![](https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/PRM_Animation.gif)
+<p align="center">
+  <img src="https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/PRM_Animation.gif" alt="animated" />
+</p>
 
 The yellow points represent nodes which have been connected to their neighbors, and the black lines between the yellow points represent the appropriate edges. The start and goal nodes are highlighted once they are connected to the roadmpa. Once the edge production process is completed, we are left with a graph that should, in most cases (this is a probabilistic process after all), connect the start node to all of the goal nodes and most of the goal nodes to each other, and thus we obtain our Probabilistic Roadmap (PRM).
 
 ### Dijkstra's Algorithm
 Once we have our PRM, we would like to find the shortest paths connecting each goal node to the start node, as well as those connecting the goal nodes to each other (when possible). Our PRM is a weighted undirected graph, where the weights are determined by the Euclidean distance between each pair of nodes (i.e. the length of the edge connecting them), and so we can implement Dijkstra's shortest path algorithm to get these shortest paths. The following animation shows the paths obtained by Dijkstra's algorithm, highlighted in yellow:
-![](https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Dijkstra_Animation.gif)
+<p align="center">
+  <img src="https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Dijkstra_Animation.gif" alt="animated" />
+</p>
 
 ### Travelling Salesman Problem
 <p align="center">
@@ -43,7 +49,9 @@ Once we have our PRM, we would like to find the shortest paths connecting each g
 </p>
 
 ### Final Trajectory
-![](https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Final_Trajectory_Animation.gif)
+<p align="center">
+  <img src="https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Final_Trajectory_Animation.gif" alt="animated" />
+</p>
 
 ## (2) Arm Motion Planning
 Once we reach a location of interest, our mars rover neeeds to retrieve the geological sample, without colliding with the obstacles
@@ -67,8 +75,10 @@ There are many variations on the RRT algorithm, one specifically worth mentionin
   <img src=https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/RRT_C-Space.png>
 </p>
 
-### Final Trajectory
-![](https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Arm_Animation.gif)
+### Final Arm Trajectory
+<p align="center">
+  <img src="https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Arm_Animation.gif" alt="animated" />
+</p>
 
 ### References
 
