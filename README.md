@@ -46,6 +46,11 @@ Once we have our PRM, we would like to find the shortest paths connecting each g
 ![](https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Final_Trajectory_Animation.gif)
 
 ## (2) Arm Motion Planning
+Once we reach a location of interest, our mars rover neeeds to retrieve the geological sample, without colliding with the obstacles
+around it. Thus it was decided to use RRT to map out a trajectory for the rover's robot arm.
+
+### RRT Algorithm
+The RRT algorithm works by expanding a tree of configuration nodes randomly over the configuration space (C-Space). Our tree starts with a single root configuration in the C-Space (This represents the initial joint values of the robot). From there, a random configuration is sampled, and the tree locates the node in the tree which is nearest to the random configuration. From there a new node is created in the direction of the random node, a step-size away from the nearest node. The forward kinematics of the robot arm is run with this new configuration, and the robot queries whether it has collided with its environment. If it has, the node is discarded. If it has not colllided, the node is added to the tree, with the nearest node as its parent. We repeat this process until we find a configuration which causes the robot arm to reach the goal. The trajectory to the goal can now be extracted by following the branch containing the goal-node
 
 ### Rapidly Exploring Random Trees (RRT)
 <p align="center">
