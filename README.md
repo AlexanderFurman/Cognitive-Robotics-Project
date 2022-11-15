@@ -42,7 +42,13 @@ First, the initial map of the environment for the navigation problem is produced
 The rover's start point is represented by the blue point, the goal zones are the green circles, and the obstacles are the dark orange circles. The free space of the rover is colored light orange.
 
 ### Probabilistic Roadmap (PRM)
-Next, we sample a certain number of points (the default is 200) from the rover's workspace, including one point per goal zone (this becomes the goal node that will be added to the roadmap, and they are represented in dark green). We use a k-Nearest Neighbors (kNN) algorithm (the default k is 5) to connect each sample to its nearest neighbors (i.e. create an edge between them), and then we run a collision detection algorithm to check whether any of the produced edges collide with any of the obstacles. In the following animation, we first see the sampling process, where the black points represent the sample nodes that were produced (using uniform random sampling). The second part of the animation shows the production of valid edges using the kNN and collision detection algorithms:
+Next, we sample a certain number of points (the default is 200) from the rover's workspace, including one point per goal zone (this becomes the goal node that will be added to the roadmap, and they are represented in dark green). We use a k-Nearest Neighbors (kNN) algorithm (the default k is 5) each sample's nearest neighbors (i.e. create an edge between them) using the kd-tree method, and we can see the results of this in the following animation:
+<p align="center">
+  <img src="https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/kNN_Animation.gif" alt="animated" />
+</p>
+All of the sampled points in the free space are initially shown in black, and the node that is cuurently being assesses for its k-nearest neighbors is highlighted yellow. These neighbors are then highlighted in orange (apologies for the color clashing). Once we have the neighbors identified for every single sample, we connected the samples to their neighbors (these connections are represented using edges) and then run a collision detection algorithm to check whether any of the produced edges collide with any of the obstacles. 
+
+In the following animation, we see the initial sampling process, where the black points represent the sample nodes that were produced (using uniform random sampling), and then the production of valid edges using the kNN and collision detection algorithms:
 <p align="center">
   <img src="https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/PRM_Animation.gif" alt="animated" />
 </p>
@@ -91,17 +97,17 @@ around it. Thus it was decided to use RRT to map out a trajectory for the rover'
 The RRT algorithm works by interacting with 2 spaces: the Configuration Space (C-Space), and the Workspace (W-Space). Given a robot arm with n joints, the C-Space is a set of dimension $R^n$, which contains all possible configurations of the robot's joints. For example, given a simple R-R robot arm whose motors can each make one full revolution, the dimension of the C-Space is $R^2$, with the bounds $([0, 2\pi),[0, 2\pi))$. 
 The W-Space contains the physical representation of the robot, the goal, and all obstacles. The dimension of the W-Space in our case is simplified to $R^2$. (Note that the RRT algorithm still works for higher dimensions of C-Space, and W-Sapce - however runtimes will inevitably increase)
 
-#### About the algorithm
+#### The Algorithm
 The RRT algorithm works by expanding a tree of configuration nodes over the configuration space (C-Space), using random sampling. Our tree starts with a single root configuration in the C-Space (This represents the initial joint values of the robot). From there, a random configuration is sampled, and the tree locates the node in the tree which is nearest to the random configuration. From there a new node is created in the direction of the random node, a step-size away from the nearest node. The forward kinematics of the robot arm is run with this new configuration, and the robot queries whether it has collided with its environment. If it has, the node is discarded. If it has not colllided, the node is added to the tree, with the nearest node as its parent. We repeat this process until we find a configuration which causes the robot arm to reach the goal. The trajectory to the goal can now be extracted by following the path in the tree from the initial node to the goal-node
 
-#### Notes on the algorithm
+#### Notes on the Algorithm
 It is important to choose the right step-size. Too big a step-size causes a large jump in the robot arm's configuration in the workspace - meaning a collision may have occured while moving from one configuration to another. Too small a step-size will cause very long run-times.
 
 There are many variations on the RRT algorithm, one specifically worth mentioning here is RRT*. RRT* is RRT with 'rewiring' capabilities. After adding some node to the tree, the node looks for its closest neighbours within a specified radius. Once it finds these neighbours, it checks if connecting to the closest neighbour would result in collision. If it does, it moves on to the next closest neighbour. If there is not collision, the node removes its previous parent, and is adopted by this closest node. This results in a shorter trajectory the robot arm needs to execute. In fact, RRT* ensures an asymptotically optimal solution $^{[5]}$.
 
 #### Search in C-Space 
 <p align="center">
-  <img src=https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/RRT_C-Space.png>
+  <img src=https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/RRT_Animation.gif alt="animated" />
 </p>
 
 ### Final Arm Trajectory
