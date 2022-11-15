@@ -60,7 +60,7 @@ The RRT algorithm works by expanding a tree of configuration nodes over the conf
 #### Notes on the algorithm
 It is important to choose the right step-size. Too big a step-size causes a large jump in the robot arm's configuration in the workspace - meaning a collision may have occured while moving from one configuration to another. Too small a step-size will cause very long run-times.
 
-There are many variations on the RRT algorithm, one specifically worth mentioning here is RRT*. RRT* is RRT with 'rewiring' capabilities. After adding some node to the tree, the node looks for its closest neighbours within a specified radius. Once it finds these neighbours, it checks if connecting to the closest neighbour would result in collision. If it does, it moves on to the next closest neighbour. If there is not collision, the node removes its previous parent, and is adopted by this closest node. This results in a shorter trajectory the robot arm needs to execute. In fact, RRT* ensures an assymptotically optimal solution $$.
+There are many variations on the RRT algorithm, one specifically worth mentioning here is RRT*. RRT* is RRT with 'rewiring' capabilities. After adding some node to the tree, the node looks for its closest neighbours within a specified radius. Once it finds these neighbours, it checks if connecting to the closest neighbour would result in collision. If it does, it moves on to the next closest neighbour. If there is not collision, the node removes its previous parent, and is adopted by this closest node. This results in a shorter trajectory the robot arm needs to execute. In fact, RRT* ensures an assymptotically optimal solution$^[3]$.
 
 #### Search in C-Space 
 <p align="center">
