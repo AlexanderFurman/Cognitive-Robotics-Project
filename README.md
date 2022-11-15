@@ -16,7 +16,7 @@ Finally, at each goal point we show the motion planning procedure for how the ro
 ### Running the Code
 TO DO
 
-*Dependencies:* Python 3, `numpy`, `matplotlib`, `os`, `imageio`, `shutil`, `networkx`, `copy`, `math`, `random`, `sys`, `scipy`, `warnings`, `unified_planning`, `unified_planning[fast-downward]`, `argparse`
+*Dependencies:* Python 3, `numpy`, `matplotlib`, `os`, `imageio`, `shutil`, `networkx`, `copy`, `math`, `random`, `sys`, `scipy`, `warnings`, `unified_planning` (version=0.4.2.362.dev1), `unified_planning[fast-downward]`, `argparse`
 
 ## (1) Rover Navigation
 In the first part of the problem, we want to plan the path of the rover between its starting point and a variety of goal zones (by default there are 3 such zones), all of which are randomly generated at the start of a run. There are a variety of obstacles (represented as circles of varying sizes) which are also randomly generated across the map - the number of obstacles can either be stochastic (between 5 and 20) or determined by the user. The rover, which is treated as a point for the sake of simplicity, must find a path that begins at the start node (represented as a single point), passes through each of the goal zones (represented as circles of random radii) at least once, and terminates to the start node - all without colliding with any obstacles.
@@ -44,9 +44,12 @@ Once we have our PRM, we would like to find the shortest paths connecting each g
 </p>
 
 ### Travelling Salesman Problem
+Next, we simplify the paths obtained by the Dijkstra algorithm into a simple weighted undirected graph, exemplified in the figure below:
 <p align="center">
   <img src=https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Simplified_Graph.png>
 </p>
+We then treat this graph as a weighted Travelling Salesman Problem (TSP), but one where each goal node in the graph must be visited *at least* once (and not only once, as is usually constrained for TSP's), and we can solve this using classical planning methods by representing the distances between nodes as the action cost for moving between those nodes. Our classical planning representation (which we do in PDDL using the Unified Planning Framework) includes:
+* All nodes are represented as objects
 
 ### Final Trajectory
 <p align="center">
