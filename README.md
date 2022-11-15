@@ -46,6 +46,7 @@ Next, we sample a certain number of points (the default is 200) from the rover's
 <p align="center">
   <img src="https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/kNN_Animation.gif" alt="animated" />
 </p>
+
 All of the sampled points in the free space are initially shown in black, and the node that is cuurently being assesses for its k-nearest neighbors is highlighted yellow. These neighbors are then highlighted in orange (apologies for the color clashing). Once we have the neighbors identified for every single sample, we connected the samples to their neighbors (these connections are represented using edges) and then run a collision detection algorithm to check whether any of the produced edges collide with any of the obstacles. 
 
 In the following animation, we see the initial sampling process, where the black points represent the sample nodes that were produced (using uniform random sampling), and then the production of valid edges using the kNN and collision detection algorithms:
@@ -107,7 +108,7 @@ There are many variations on the RRT algorithm, one specifically worth mentionin
 
 #### Search in C-Space 
 <p align="center">
-  <img src=https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/RRT_Animation.gif alt="animated" />
+  <img src="https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/RRT_Animation.gif" alt="animated" />
 </p>
 
 ### Final Arm Trajectory
