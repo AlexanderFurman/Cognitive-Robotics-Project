@@ -67,8 +67,16 @@ def Create_Start_Node(obs, goals):
 def CreateOutputFolder(save_imgs,save_gifs,save_pddl):
     if not os.path.exists("Output"):
         os.mkdir("Output")
-    if not os.path.exists("Output/Temp_Images"):
-        os.mkdir("Output/Temp_Images")
+
+    temp_folder = "Output/Temp_Images"
+    if not os.path.exists(temp_folder):
+        os.mkdir(temp_folder)
+    elif os.path.exists(temp_folder):
+        for filename in os.listdir(temp_folder):
+            file_path = os.path.join(temp_folder, filename)
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+        
     path = None
     if save_imgs or save_gifs or save_pddl:
         i = 0
@@ -80,8 +88,8 @@ def CreateOutputFolder(save_imgs,save_gifs,save_pddl):
 
 def main():
     argus = options()
-    N_goals = argus.n; N_samples = argus.s; show_knn = argus.k; show_animation = argus.a
-    save_pddl = argus.p; save_gifs = argus.g; save_imgs = argus.i; show_arm = argus.arm; show_nav = argus.nav
+    N_goals = argus.n; N_samples = argus.s; show_knn = eval(argus.k); show_animation = eval(argus.a)
+    save_pddl = eval(argus.p); save_gifs = eval(argus.g); save_imgs = eval(argus.i); show_arm = eval(argus.arm); show_nav = eval(argus.nav)
     if argus.o is not None:
         N_obs = argus.o
     else:
@@ -121,16 +129,16 @@ def main():
 
 def options():
     parser = argparse.ArgumentParser(description="Integrated Task & Motion Planning for a Simplified Mars Rover Exploration Problem", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-nav", dest='nav', required=False, default=True, help="Run the navigation simulation")
-    parser.add_argument("-arm", dest='arm', required=False, default=True, help="Run the arm simulation")
+    parser.add_argument("-nav", dest='nav', required=False, default="True", help="Run the navigation simulation")
+    parser.add_argument("-arm", dest='arm', required=False, default="True", help="Run the arm simulation")
     parser.add_argument("-n", dest='n', required=False, default=3, help="Number of goals to create")
     parser.add_argument("-o", dest='o', required=False, default=None, help="Number of obstacles to create (default will randomize the number of obstacles)")
     parser.add_argument("-s", dest='s', required=False, default=200, help="Number of samples for PRM")
-    parser.add_argument("-a", dest='a', required=False, default=False, help="Show animations")
-    parser.add_argument("-k", dest='k', required=False, default=False, help="Show the k-nearest neighbors animation")
-    parser.add_argument("-p", dest='p', required=False, default=False, help="Save .pddl files")
-    parser.add_argument("-i", dest='i', required=False, default=False, help="Save .png image files")
-    parser.add_argument("-g", dest='g', required=False, default=False, help="Save .gif animation files")
+    parser.add_argument("-a", dest='a', required=False, default="False", help="Show animations")
+    parser.add_argument("-k", dest='k', required=False, default="False", help="Show the k-nearest neighbors animation")
+    parser.add_argument("-p", dest='p', required=False, default="False", help="Save .pddl files")
+    parser.add_argument("-i", dest='i', required=False, default="False", help="Save .png image files")
+    parser.add_argument("-g", dest='g', required=False, default="False", help="Save .gif animation files")
     return parser.parse_args()
 
 if __name__ == '__main__':

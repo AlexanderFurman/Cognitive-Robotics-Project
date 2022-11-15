@@ -15,7 +15,8 @@ Finally, at each goal point we show the motion planning procedure for how the ro
 
 ### Running the Code
 In order to run the code, similar run the `python main.py` command from the command line with any of the following command line arguments:
-'''
+
+```
 -h, --help  show this help message and exit
   -nav NAV    Run the navigation simulation (default: True)
   -arm ARM    Run the arm simulation (default: True)
@@ -27,7 +28,7 @@ In order to run the code, similar run the `python main.py` command from the comm
   -p P        Save .pddl files (default: False)
   -i I        Save .png image files (default: False)
   -g G        Save .gif animation files (default: False)
-'''
+```
 
 *Dependencies:* Python 3, `numpy`, `matplotlib`, `os`, `imageio`, `shutil`, `networkx`, `copy`, `math`, `random`, `sys`, `scipy`, `warnings`, `unified_planning` (version=0.4.2.362.dev1), `unified_planning[fast-downward]`, `argparse`
 
@@ -61,8 +62,22 @@ Next, we simplify the paths obtained by the Dijkstra algorithm into a simple wei
 <p align="center">
   <img src=https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Simplified_Graph.png>
 </p>
-We then treat this graph as a weighted Travelling Salesman Problem (TSP), but one where each goal node in the graph must be visited *at least* once (and not only once, as is usually constrained for TSP's), and we can solve this using classical planning methods by representing the distances between nodes as the action cost for moving between those nodes. Our classical planning representation (which we do in PDDL using the Unified Planning Framework) includes:
-* All nodes are represented as objects
+We then treat this graph as a weighted Travelling Salesman Problem (TSP), but one where each goal node in the graph must be visited *at least* once (and not only once, as is usually constrained for TSP's), and we can solve this using classical planning methods by representing the distances between nodes as the action cost for moving between those nodes. Our classical planning representation (which we do in PDDL using the Unified Planning Framework) is conducted as follows:
+
+*Domain*
+* There is a `rover` type and a `location` type, as well as a `start` type which extends `location` as well as a set of goal types (`goal{i}`, where $i$ is a natural number) unique to each goal node (this was part of a messy workaround that we needed to implement) which also extend the `location` type
+* The fluents (which are boolean, i.e. predicates) indicate the current location (node) of the rover (called `rover-at(?rover, ?location)`), as well as whether or not the rover has already visited a certain node (called `visited ?rover ?location`)
+* A numeric fluent called `total-cost` records the sum of the costs of the actions in the plan - we will ask our planner to minimize this value in its solution
+* The possible actions are encoded as a set of actions called `move_{i}_{j}`, which take the rover from node $i$ to node $j$ - the reason we didn't just create one `move` action for all nodes is because we needed to encode the action costs (given by the length of the shortest path between those nodes) in a compatible way for the UPF (as part of our messy workaround)
+  * `move{i}_{j}(?rover ?i ?j)` has precondition `rover_at(?rover ?i)` and effects $\lnot$`(rover_at ?rover ?i)`$\land$`(rover_at ?rover ?j)`$\land$`(visited ?rover ?j)`$\land$`(increase (total-cost) {cost{i}{j}})))`
+
+*Problem*
+* We instantiate one object per type (one rover of type `rover`, one start point of type `start`, and a set of start points `g{i}` of type `goal{i}`)
+* We set the initial state such that the rover is at the start point, the rover has visited the start point, and the total cost is zero - i.e. `(rover_at rover s) (visited rover s) (= (total-cost) 0))`
+* We set the goal state such that the rover is back at the start point and that all of the goal points have been visited - i.e `(rover_at ?rover ?s)`$\land$`(visited ?rover ?g{j})`$\forall$ goals
+* Finally, we declare the quality metric to be the minimization of the total cost of the actions in the plan (i.e. the `total-cost` fluent)
+
+An example of these `.pddl` files can be found in the `Graphics` folder. Once the problem is represented in PDDL, we use the Fast Downward Planner (with optimality guarantees) in order to obtain the optimal solution to our TSP. Using the plan it gives, we can finally tell our rover what trajectory to take in order to conduct its navigation and complete its tasks.
 
 ### Final Trajectory
 <p align="center">
@@ -84,7 +99,7 @@ The RRT algorithm works by expanding a tree of configuration nodes over the conf
 #### Notes on the algorithm
 It is important to choose the right step-size. Too big a step-size causes a large jump in the robot arm's configuration in the workspace - meaning a collision may have occured while moving from one configuration to another. Too small a step-size will cause very long run-times.
 
-There are many variations on the RRT algorithm, one specifically worth mentioning here is RRT*. RRT* is RRT with 'rewiring' capabilities. After adding some node to the tree, the node looks for its closest neighbours within a specified radius. Once it finds these neighbours, it checks if connecting to the closest neighbour would result in collision. If it does, it moves on to the next closest neighbour. If there is not collision, the node removes its previous parent, and is adopted by this closest node. This results in a shorter trajectory the robot arm needs to execute. In fact, RRT* ensures an asymptotically optimal solution $^{[3]}$.
+There are many variations on the RRT algorithm, one specifically worth mentioning here is RRT*. RRT* is RRT with 'rewiring' capabilities. After adding some node to the tree, the node looks for its closest neighbours within a specified radius. Once it finds these neighbours, it checks if connecting to the closest neighbour would result in collision. If it does, it moves on to the next closest neighbour. If there is not collision, the node removes its previous parent, and is adopted by this closest node. This results in a shorter trajectory the robot arm needs to execute. In fact, RRT* ensures an asymptotically optimal solution $^{[4]}$.
 
 #### Search in C-Space 
 <p align="center">
@@ -98,15 +113,16 @@ There are many variations on the RRT algorithm, one specifically worth mentionin
 
 ### References
 
-[1] Wenjun Cheng & Yuhui Gao. ["Using PDDL to Solve Vehicle Routing Problems"](https://hal.inria.fr/hal-01383334). *8th International
-Conference on Intelligent Information Processing (IIP)*, 2014.
+[1] Wenjun Cheng & Yuhui Gao. ["Using PDDL to Solve Vehicle Routing Problems"](https://hal.inria.fr/hal-01383334). *8th International Conference on Intelligent Information Processing (IIP)*, 2014.
 
 [2] Tim Chinenov. ["Robotic Path Planning: RRT and RRT*"](https://theclassytim.medium.com/robotic-path-planning-rrt-and-rrt-212319121378). 2019. 
 
-[3] Karaman and Frazzoli. ["Sampling-based algorithms for optimal motion planning"](https://journals.sagepub.com/doi/abs/10.1177/0278364911406761), 2011
+[3] Malte Helmert. ["The Fast Downward Planning System"](https://www.aaai.org/Papers/JAIR/Vol26/JAIR-2606.pdf). *Journal of Artificial Intelligence Research (JAIR)*, 2006. GitHub: https://github.com/aibasel/downward
 
-[4] Alexey Klochay. ["Implementing Dijkstra’s Algorithm in Python"](https://www.udacity.com/blog/2021/10/implementing-dijkstras-algorithm-in-python.html). *Udacity*, 2021. 
+[4] Sertac Karaman & Emilio Frazzoli. ["Sampling-based Algorithms for Optimal Motion Planning"](https://journals.sagepub.com/doi/abs/10.1177/0278364911406761). *The International Journal of Robotics Research (IJRR)*, 2011.
 
-[5] Atsushi Sakai, Daniel Ingram, Joseph Dinius, Karan Chawla, Antonin Raffin & Alexis Paques. ["PythonRobotics: A Python Code Collection of Robotics Algorithms"](https://arxiv.org/abs/1808.10703). 2018. GitHub: https://github.com/AtsushiSakai/PythonRobotics
+[5] Alexey Klochay. ["Implementing Dijkstra’s Algorithm in Python"](https://www.udacity.com/blog/2021/10/implementing-dijkstras-algorithm-in-python.html). *Udacity*, 2021. 
 
-[6] Oren Salzman, 'Sampling-based planners' [Lecture], 236610: Algorithmic Motion Planning, Technion - Israel Institute of Technology, 2021.
+[6] Atsushi Sakai, Daniel Ingram, Joseph Dinius, Karan Chawla, Antonin Raffin & Alexis Paques. ["PythonRobotics: A Python Code Collection of Robotics Algorithms"](https://arxiv.org/abs/1808.10703). 2018. GitHub: https://github.com/AtsushiSakai/PythonRobotics
+
+[7] Oren Salzman, 'Sampling-Based Planners' [Lecture], Algorithmic Robot Motion Planning Course (236610), Technion - Israel Institute of Technology, 2021.

@@ -116,7 +116,7 @@ class Plotter:
         root_node = nodes.pop(0)
         root_vals = root_node.vectorized_values()
         plt.plot(root_vals[0], root_vals[1], 0.05, color='grey')
-
+        plt.title("RRT Algorithm in the Arm's C-Space")
         if self.save_gif:
             print("Producing RRT animation .gif...")
             img_list = ['Output/Temp_Images/1.png']
@@ -176,8 +176,8 @@ class Plotter:
             plt.show()
         if self.save_gif:
             for i in range(1,10):
-                img_list.append('Output/Temp_Images/' + str(1+new_idx+i) + '.png')
-                shutil.copyfile('Output/Temp_Images/' + str(1+new_idx) + '.png', 'Output/Temp_Images/' + str(1+new_idx+i) + '.png')
+                img_list.append('Output/Temp_Images/' + str(new_idx+i) + '.png')
+                shutil.copyfile('Output/Temp_Images/' + str(new_idx) + '.png', 'Output/Temp_Images/' + str(new_idx+i) + '.png')
             Create_GIF(img_list, "RRT_Animation", self.output_path)
             print("\t...Done")
         return
@@ -218,7 +218,7 @@ class Plotter:
                 waypoints = np.vstack([waypoints, joint_states])
         return waypoints
         
-    def generate_linear_trajectory(self, initial_joint_states, final_joint_states, framerate = 15, n_frames = 75, traj_type = 'linear', output_name=None):
+    def generate_linear_trajectory(self, initial_joint_states, final_joint_states, output_name, framerate = 15, n_frames = 75, traj_type = 'linear'):
         waypoints = self.generate_config_waypoints(initial_joint_states, final_joint_states, n_frames, traj_type)
         for i in range(len(waypoints)):
             vals = []
@@ -237,7 +237,7 @@ class Plotter:
         ani.save(output_name+"Arm_Animation%i.gif" %i, dpi=300, writer=PillowWriter(fps=framerate))
         return
 
-    def generate_trajectory(self, path, framerate = 15, n_frames = 75, traj_type = 'linear', output_name=None):
+    def generate_trajectory(self, path, output_name, framerate = 15, n_frames = 75, traj_type = 'linear'):
         for i in range(len(path)-1):
             waypoints = self.generate_config_waypoints(path[i], path[i+1], n_frames, traj_type)
             for i in range(len(waypoints)):
@@ -264,11 +264,7 @@ class Plotter:
         if self.save_gif:
             print("Producing rover animation .gif...")
             ani = FuncAnimation(self.fig, self.animate, frames=len(self.frames), interval=1000/framerate, repeat=False)
-            i = 0
-            while os.path.exists(output_name+"Arm_Animation%i.gif" % i):
-                i += 1
-            ani.save(output_name+"Arm_Animation%i.gif" %i, dpi=300, writer=PillowWriter(fps=framerate))
-
+            ani.save(output_name+"Arm_Animation.gif", dpi=300, writer=PillowWriter(fps=framerate))
             print("\t...Done")
         return
 

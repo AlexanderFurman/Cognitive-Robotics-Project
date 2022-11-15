@@ -24,7 +24,8 @@ def Arm_Run(output_path, save_img=False, save_gif=False, show_anim=False):
     tree = rrt_planner.rrt([JointState(np.pi/2), JointState(np.pi/2)])
     paths = rrt_planner.generate_paths()
 
-    plotter.show_rrt(tree.nodes, paths)
+    if not show_anim:
+        plotter.show_rrt(tree.nodes, paths)
     plotter.rrt_plot(paths[0], tree.nodes, rrt_planner.random_samples, rrt_planner.nearest_nodes)
     
     min_length = 100000000
@@ -40,7 +41,7 @@ def Arm_Run(output_path, save_img=False, save_gif=False, show_anim=False):
     states = [nodes[i].joint_values for i in range(len(nodes))]
 
     if save_gif or show_anim:
-        plotter.generate_trajectory(states, n_frames = 3)
+        plotter.generate_trajectory(states, output_path, n_frames = 3)
     return
 
 if __name__ == '__main__':
