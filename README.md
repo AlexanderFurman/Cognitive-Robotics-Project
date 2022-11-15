@@ -47,10 +47,10 @@ Next, we sample a certain number of points (the default is 200) from the rover's
   <img src="https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/PRM_Animation.gif" alt="animated" />
 </p>
 
-The yellow points represent nodes which have been connected to their neighbors, and the black lines between the yellow points represent the appropriate edges. The start and goal nodes are highlighted once they are connected to the roadmpa. Once the edge production process is completed, we are left with a graph that should, in most cases (this is a probabilistic process after all), connect the start node to all of the goal nodes and most of the goal nodes to each other, and thus we obtain our Probabilistic Roadmap (PRM).
+The yellow points represent nodes which have been connected to their neighbors, and the black lines between the yellow points represent the appropriate edges. The start and goal nodes are highlighted once they are connected to the roadmpa. Once the edge production process is completed, we are left with a graph that should, in most cases (this is a probabilistic process after all), connect the start node to all of the goal nodes and most of the goal nodes to each other, and thus we obtain our Probabilistic Roadmap (PRM) $^{[7]}$.
 
 ### Dijkstra's Algorithm
-Once we have our PRM, we would like to find the shortest paths connecting each goal node to the start node, as well as those connecting the goal nodes to each other (when possible). Our PRM is a weighted undirected graph, where the weights are determined by the Euclidean distance between each pair of nodes (i.e. the length of the edge connecting them), and so we can implement Dijkstra's shortest path algorithm to get these shortest paths. The following animation shows the paths obtained by Dijkstra's algorithm, highlighted in yellow:
+Once we have our PRM, we would like to find the shortest paths connecting each goal node to the start node, as well as those connecting the goal nodes to each other (when possible). Our PRM is a weighted undirected graph, where the weights are determined by the Euclidean distance between each pair of nodes (i.e. the length of the edge connecting them), and so we can implement Dijkstra's shortest path algorithm $^{[6]}$ to get these shortest paths. The following animation shows the paths obtained by Dijkstra's algorithm, highlighted in yellow:
 <p align="center">
   <img src="https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Dijkstra_Animation.gif" alt="animated" />
 </p>
@@ -60,7 +60,7 @@ Next, we simplify the paths obtained by the Dijkstra algorithm into a simple wei
 <p align="center">
   <img src=https://github.com/AlexanderFurman/Cognitive-Robotics-Project/blob/main/Graphics/Simplified_Graph.png>
 </p>
-We then treat this graph as a weighted Travelling Salesman Problem (TSP), but one where each goal node in the graph must be visited *at least* once (and not only once, as is usually constrained for TSP's), and we can solve this using classical planning methods by representing the distances between nodes as the action cost for moving between those nodes. Our classical planning representation (which we do in PDDL using the Unified Planning Framework) is conducted as follows:
+We then treat this graph as a weighted Travelling Salesman Problem (TSP), but one where each goal node in the graph must be visited *at least* once (and not only once, as is usually constrained for TSP's), and we can solve this using classical planning methods by representing the distances between nodes as the action cost for moving between those nodes. Our classical planning representation (which we do in PDDL using the Unified Planning Framework $^{[1]}$ for Python) is conducted as follows:
 
 ##### Domain
 * There is a `rover` type and a `location` type, as well as a `start` type which extends `location` as well as a set of goal types (`goal{i}`, where $i$ is a natural number) unique to each goal node (this was part of a messy workaround that we needed to implement) which also extend the `location` type
@@ -75,7 +75,7 @@ We then treat this graph as a weighted Travelling Salesman Problem (TSP), but on
 * We set the goal state such that the rover is back at the start point and that all of the goal points have been visited - i.e. `(rover_at ?rover ?s)`$\land$`(visited ?rover ?g{j})`$\forall g_{j}\in{goals}$
 * Finally, we declare the quality metric to be the minimization of the total cost of the actions in the plan (i.e. the `total-cost` fluent)
 
-An example of these `.pddl` files can be found in the `Graphics` folder. Once the problem is represented in PDDL, we use the Fast Downward Planner (with optimality guarantees) in order to obtain the optimal solution to our TSP. Using the plan it gives, we can finally tell our rover what trajectory to take in order to conduct its navigation and complete its tasks.
+An example of these `.pddl` files can be found in the `Graphics` folder. Once the problem is represented in PDDL, we use the Fast Downward Planner $^{[4]}$ (with optimality guarantees) in order to obtain the optimal solution to our TSP. Using the plan it gives, we can finally tell our rover what trajectory to take in order to conduct its navigation and complete its tasks.
 
 ### Final Trajectory
 <p align="center">
@@ -97,7 +97,7 @@ The RRT algorithm works by expanding a tree of configuration nodes over the conf
 #### Notes on the algorithm
 It is important to choose the right step-size. Too big a step-size causes a large jump in the robot arm's configuration in the workspace - meaning a collision may have occured while moving from one configuration to another. Too small a step-size will cause very long run-times.
 
-There are many variations on the RRT algorithm, one specifically worth mentioning here is RRT*. RRT* is RRT with 'rewiring' capabilities. After adding some node to the tree, the node looks for its closest neighbours within a specified radius. Once it finds these neighbours, it checks if connecting to the closest neighbour would result in collision. If it does, it moves on to the next closest neighbour. If there is not collision, the node removes its previous parent, and is adopted by this closest node. This results in a shorter trajectory the robot arm needs to execute. In fact, RRT* ensures an asymptotically optimal solution $^{[4]}$.
+There are many variations on the RRT algorithm, one specifically worth mentioning here is RRT*. RRT* is RRT with 'rewiring' capabilities. After adding some node to the tree, the node looks for its closest neighbours within a specified radius. Once it finds these neighbours, it checks if connecting to the closest neighbour would result in collision. If it does, it moves on to the next closest neighbour. If there is not collision, the node removes its previous parent, and is adopted by this closest node. This results in a shorter trajectory the robot arm needs to execute. In fact, RRT* ensures an asymptotically optimal solution $^{[5]}$.
 
 #### Search in C-Space 
 <p align="center">
@@ -111,16 +111,18 @@ There are many variations on the RRT algorithm, one specifically worth mentionin
 
 ### References
 
-[1] Wenjun Cheng & Yuhui Gao. ["Using PDDL to Solve Vehicle Routing Problems"](https://hal.inria.fr/hal-01383334). *8th International Conference on Intelligent Information Processing (IIP)*, 2014.
+[1] AIPlan4EU. ["The Unified Planning Library"](https://unified-planning.readthedocs.io/en/latest/index.html), 2021. GitHub: https://github.com/aiplan4eu/unified-planning
 
-[2] Tim Chinenov. ["Robotic Path Planning: RRT and RRT*"](https://theclassytim.medium.com/robotic-path-planning-rrt-and-rrt-212319121378). 2019. 
+[2] Wenjun Cheng & Yuhui Gao. ["Using PDDL to Solve Vehicle Routing Problems"](https://hal.inria.fr/hal-01383334). *8th International Conference on Intelligent Information Processing (IIP)*, 2014.
 
-[3] Malte Helmert. ["The Fast Downward Planning System"](https://www.aaai.org/Papers/JAIR/Vol26/JAIR-2606.pdf). *Journal of Artificial Intelligence Research (JAIR)*, 2006. GitHub: https://github.com/aibasel/downward
+[3] Tim Chinenov. ["Robotic Path Planning: RRT and RRT*"](https://theclassytim.medium.com/robotic-path-planning-rrt-and-rrt-212319121378). 2019. 
 
-[4] Sertac Karaman & Emilio Frazzoli. ["Sampling-based Algorithms for Optimal Motion Planning"](https://journals.sagepub.com/doi/abs/10.1177/0278364911406761). *The International Journal of Robotics Research (IJRR)*, 2011.
+[4] Malte Helmert. ["The Fast Downward Planning System"](https://www.aaai.org/Papers/JAIR/Vol26/JAIR-2606.pdf). *Journal of Artificial Intelligence Research (JAIR)*, 2006. GitHub: https://github.com/aibasel/downward
 
-[5] Alexey Klochay. ["Implementing Dijkstra’s Algorithm in Python"](https://www.udacity.com/blog/2021/10/implementing-dijkstras-algorithm-in-python.html). *Udacity*, 2021. 
+[5] Sertac Karaman & Emilio Frazzoli. ["Sampling-Based Algorithms for Optimal Motion Planning"](https://journals.sagepub.com/doi/abs/10.1177/0278364911406761). *The International Journal of Robotics Research (IJRR)*, 2011.
 
-[6] Atsushi Sakai, Daniel Ingram, Joseph Dinius, Karan Chawla, Antonin Raffin & Alexis Paques. ["PythonRobotics: A Python Code Collection of Robotics Algorithms"](https://arxiv.org/abs/1808.10703). 2018. GitHub: https://github.com/AtsushiSakai/PythonRobotics
+[6] Alexey Klochay. ["Implementing Dijkstra’s Algorithm in Python"](https://www.udacity.com/blog/2021/10/implementing-dijkstras-algorithm-in-python.html). *Udacity*, 2021. 
 
-[7] Oren Salzman, 'Sampling-Based Planners' [Lecture], Algorithmic Robot Motion Planning Course (236610), Technion - Israel Institute of Technology, 2021.
+[7] Atsushi Sakai, Daniel Ingram, Joseph Dinius, Karan Chawla, Antonin Raffin & Alexis Paques. ["PythonRobotics: A Python Code Collection of Robotics Algorithms"](https://arxiv.org/abs/1808.10703). 2018. GitHub: https://github.com/AtsushiSakai/PythonRobotics
+
+[8] Oren Salzman. "Sampling-Based Planners" Lecture, Algorithmic Robot Motion Planning Course (236610): Technion - Israel Institute of Technology, 2021.
