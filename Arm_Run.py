@@ -17,15 +17,16 @@ def Arm_Run(output_path, save_img=False, save_gif=False, show_anim=False):
     target2 = np.array([16,8])
     target3 = np.array([-1, 7])
     environment = Environment(robot, [obstacle1, obstacle2, obstacle3, obstacle5, obstacle6], [target2], epsilon = 1, is_wall = False, is_floor = True)
-    plotter = Plotter(environment, output_path=output_path, save_img=save_img, show_anim=show_anim)
+    plotter = Plotter(environment, output_path=output_path, save_img=save_img, show_anim=show_anim, save_gif=save_gif)
 
     np.random.seed(0)  
     rrt_planner = RRTPlanner(environment, 0.05, 20000)
     tree = rrt_planner.rrt([JointState(np.pi/2), JointState(np.pi/2)])
     paths = rrt_planner.generate_paths()
+
     plotter.show_rrt(tree.nodes, paths)
     plotter.rrt_plot(paths[0], tree.nodes, rrt_planner.random_samples, rrt_planner.nearest_nodes)
-
+    
     min_length = 100000000
     current_pos = rrt_planner.gripper_values[0]
     for pos in rrt_planner.gripper_values:

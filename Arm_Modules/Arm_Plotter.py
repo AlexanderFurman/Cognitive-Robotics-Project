@@ -1,4 +1,4 @@
-import os
+import os, shutil
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
@@ -6,9 +6,10 @@ from matplotlib.animation import PillowWriter
 from matplotlib.widgets import Slider
 from Arm_Modules.Arm_Robot import JointState
 from Nav_Modules.Nav_Geometry import Rectangle, Circle
+from Nav_Modules.Nav_Plotter import Create_GIF
 
 class Plotter:
-    def __init__(self, environment, output_path=None, save_img=False, save_gif=False, show_anim=False ):
+    def __init__(self, environment, output_path=None, save_img=False, save_gif=False, show_anim=False):
         self.environment = environment
         self.output_path = output_path
         self.save_img = save_img
@@ -17,7 +18,7 @@ class Plotter:
         self.robot = environment.robot
         self.obstacles = environment.obstacles
         self.targets = environment.targets
-        self.fig, self.ax = plt.subplots()
+        #self.fig, self.ax = plt.subplots() ?
         self.gripper_positions = []
         self.frames= []
         self.collision_in_frame = []
@@ -81,7 +82,7 @@ class Plotter:
         return
 
     def show_rrt(self, nodes, paths):
-        self.ax.clear()
+        self.fig, self.ax = plt.subplots()
         plt.grid()
         self.ax.set_ylim(self.robot.min_joint_limit,self.robot.max_joint_limit)
         self.ax.set_xlim(self.robot.min_joint_limit,self.robot.max_joint_limit)
@@ -102,12 +103,12 @@ class Plotter:
         if self.save_img:
             name = self.output_path + "RRT_C-Space.png"
             plt.savefig(name)
-        plt.show()
+        if not self.show_anim:
+            plt.show()
         return  
 
     def rrt_plot(self, path, nodes, sample_nodes, nearest_nodes):
-        _, axis = plt.subplots()
-        self.ax = axis
+        self.fig, self.ax = plt.subplots()
         plt.grid()
         self.ax.set_ylim(-np.pi,np.pi)
         self.ax.set_xlim(-np.pi,np.pi)
@@ -115,8 +116,16 @@ class Plotter:
         root_node = nodes.pop(0)
         root_vals = root_node.vectorized_values()
         plt.plot(root_vals[0], root_vals[1], 0.05, color='grey')
+
+        if self.save_gif:
+            print("Producing RRT animation .gif...")
+            img_list = ['Output/Temp_Images/1.png']
+            plt.savefig('Output/Temp_Images/1.png')
+
         for (node, sample_node, nearest_node) in zip(nodes, sample_nodes, nearest_nodes):
-            xlabel_string = 'Nodes: ' + str(nodes.index(node)+1) + ' / ' + str(len(nodes))
+            idx = nodes.index(node)+1
+
+            xlabel_string = 'Nodes: ' + str(idx) + ' / ' + str(len(nodes))
             self.ax.set_xlabel(xlabel_string)
             
             sample_vec = sample_node.vectorized_values()
@@ -137,19 +146,40 @@ class Plotter:
             circle1.remove()
             circle2.remove()
             circle3.remove()
+
+            if self.save_gif:
+                img_list.append('Output/Temp_Images/' + str(idx) + '.png')
+                plt.savefig('Output/Temp_Images/' + str(idx) + '.png')
+
         start_vec = path[0].vectorized_values()
         goal_vec = path[-1].vectorized_values()
         circle1 = plt.Circle((start_vec[0], start_vec[1]), 0.1, color='blue')
         circle2 = plt.Circle((goal_vec[0],goal_vec[1]), 0.1, color='green')
         self.ax.add_patch(circle1)
         self.ax.add_patch(circle2)
-        for node in path:
-            self.connect_parent_and_child(node, color='lime')
-            # xlabel_string = 'Nodes: ' + str(len(paths)) + ' / ' + str(len(path) + ', ')
-            #self.ax.set_xlabel(xlabel_string)
+        
+        for idx_n, node in enumerate(path):
+            if idx_n > 0:
+                self.connect_parent_and_child(node, color='lime')
+            xlabel_string_new = xlabel_string + ', Final Path Nodes: ' + str(idx_n+1) + ' / ' + str(len(path))
+            self.ax.set_xlabel(xlabel_string_new)
             plt.pause(0.001)
+            if self.save_gif:
+                new_idx = idx+idx_n
+                img_list.append('Output/Temp_Images/' + str(new_idx) + '.png')
+                plt.savefig('Output/Temp_Images/' + str(new_idx) + '.png')
+            idx_n += 1
+        xlabel_string_final = xlabel_string_new + ', Plotting Complete!'
+        self.ax.set_xlabel(xlabel_string_final)
 
-        plt.show()
+        if self.show_anim:
+            plt.show()
+        if self.save_gif:
+            for i in range(1,10):
+                img_list.append('Output/Temp_Images/' + str(1+new_idx+i) + '.png')
+                shutil.copyfile('Output/Temp_Images/' + str(1+new_idx) + '.png', 'Output/Temp_Images/' + str(1+new_idx+i) + '.png')
+            Create_GIF(img_list, "RRT_Animation", self.output_path)
+            print("\t...Done")
         return
         
     def connect_parent_and_child(self, child_node, color='grey', markersize = 2):
@@ -208,7 +238,6 @@ class Plotter:
         return
 
     def generate_trajectory(self, path, framerate = 15, n_frames = 75, traj_type = 'linear', output_name=None):
-        #plt.cla()
         for i in range(len(path)-1):
             waypoints = self.generate_config_waypoints(path[i], path[i+1], n_frames, traj_type)
             for i in range(len(waypoints)):
@@ -223,22 +252,24 @@ class Plotter:
                 self.goal_in_frame.append(self.environment.query_robot_at_goal())
         
         if self.show_anim:
-            print("Animating...")
+            print("Animating rover...")
             _, axis = plt.subplots()
             self.ax = axis
             for i in range(len(self.frames)):
                 self.animate(i)
                 plt.pause(0.01)
             plt.show()
+            print("\t...Done")
 
         if self.save_gif:
-            print("in save gif")
+            print("Producing rover animation .gif...")
             ani = FuncAnimation(self.fig, self.animate, frames=len(self.frames), interval=1000/framerate, repeat=False)
             i = 0
             while os.path.exists(output_name+"Arm_Animation%i.gif" % i):
                 i += 1
             ani.save(output_name+"Arm_Animation%i.gif" %i, dpi=300, writer=PillowWriter(fps=framerate))
-            print("Complete!")
+
+            print("\t...Done")
         return
 
     def animate(self, i):

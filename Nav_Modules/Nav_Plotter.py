@@ -170,7 +170,7 @@ class Plotter:
             for j in range(1,15):
                 img_list.append('Output/Temp_Images/' + str(10+idx_s+idx_e+j) + '.png')
                 shutil.copyfile('Output/Temp_Images/' + str(10+idx_s+idx_e) + '.png', 'Output/Temp_Images/' + str(10+idx_s+idx_e+j) + '.png')
-            self.Create_GIF(img_list, "PRM_Animation")
+            Create_GIF(img_list, "PRM_Animation", self.output_path)
             print("\t...Done")
         return
 
@@ -239,7 +239,7 @@ class Plotter:
         if self.show_anim:
             plt.show()
         if self.save_gif:
-            self.Create_GIF(img_list, "Dijkstra_Animation")
+            Create_GIF(img_list, "Dijkstra_Animation", self.output_path)
             print("\t...Done")
         return
 
@@ -306,26 +306,28 @@ class Plotter:
             img_list = ['Output/Temp_Images/1.png']
             plt.savefig('Output/Temp_Images/1.png')
 
-        count = 0
+        traj_count = 0
+        node_count = 0
         # plotting the solution trajectories (including the start and goal nodes)
         for idx_t, traj in enumerate(self.final_traj):
             xlabel_string = 'Trajectories: ' + str(idx_t+1) + ' / ' + str(len(self.final_traj))
-            if idx_t == len(self.final_traj) - 1:
-                axis.set_xlabel(xlabel_string + ', Plotting Complete!') 
-            else:
-                axis.set_xlabel(xlabel_string)
-            count += 1
-            for o in traj:
+            axis.set_xlabel(xlabel_string)
+            traj_count += 1
+
+            for idx_o, o in enumerate(traj):
+                node_count += 1
                 if isinstance(o,Node):
                     if not isinstance(o,Start_Node) and not isinstance(o,Goal_Node):
-                        o.plot_node(axis, color=((255-(20*count))/255, (255-(20*count))/255, 0))
+                        o.plot_node(axis, color=((255-(20*idx_t))/255, (255-(20*idx_t))/255, 0))
                     else:
                         o.plot_node(axis)
                 elif isinstance(o,Edge):
-                    o.plot_edge(axis, color=((255-(30*count))/255, (255-(30*count))/255, 0))
+                    o.plot_edge(axis, color=((255-(30*idx_t))/255, (255-(30*idx_t))/255, 0))
+                if (idx_t == len(self.final_traj) - 1) and (idx_o == len(traj) - 1):
+                    axis.set_xlabel(xlabel_string + ', Plotting Complete!') 
                 if self.save_gif:
-                    img_list.append('Output/Temp_Images/' + str(1+count) + '.png')
-                    plt.savefig('Output/Temp_Images/' + str(1+count) + '.png')
+                    img_list.append('Output/Temp_Images/' + str(node_count) + '.png')
+                    plt.savefig('Output/Temp_Images/' + str(1+node_count) + '.png')
                 plt.pause(0.1)
             plt.pause(0.01)
 
@@ -333,19 +335,19 @@ class Plotter:
             plt.savefig(self.output_path+'Final_Map.png')
         if self.save_gif:
             for j in range(1,15):
-                img_list.append('Output/Temp_Images/' + str(1+count+j) + '.png')
-                shutil.copyfile('Output/Temp_Images/' + str(1+count) + '.png', 'Output/Temp_Images/' + str(1+count+j) + '.png')
-            self.Create_GIF(img_list, "Final_Trajectory_Animation")
+                img_list.append('Output/Temp_Images/' + str(1+node_count+j) + '.png')
+                shutil.copyfile('Output/Temp_Images/' + str(1+node_count) + '.png', 'Output/Temp_Images/' + str(1+node_count+j) + '.png')
+            Create_GIF(img_list, "Final_Trajectory_Animation", self.output_path)
             print("\t...Done\n")
         plt.show()
         return
 
-    def Create_GIF(self, img_list, name):
-        with imageio.get_writer(self.output_path + name + ".gif", mode='I') as writer:
-            for filename in img_list:
-                image = imageio.imread(filename)
-                writer.append_data(image)
-        # Remove the temporary image files
-        for filename in set(img_list):
-            os.remove(filename)
-        return
+def Create_GIF(img_list, name, output_path):
+    with imageio.get_writer(output_path + name + ".gif", mode='I') as writer:
+        for filename in img_list:
+            image = imageio.imread(filename)
+            writer.append_data(image)
+    # Remove the temporary image files
+    for filename in set(img_list):
+        os.remove(filename)
+    return

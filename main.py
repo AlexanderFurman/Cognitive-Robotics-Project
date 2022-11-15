@@ -81,37 +81,38 @@ def CreateOutputFolder(save_imgs,save_gifs,save_pddl):
 def main():
     argus = options()
     N_goals = argus.n; N_samples = argus.s; show_knn = argus.k; show_animation = argus.a
-    save_pddl = argus.p; save_gifs = argus.g; save_imgs = argus.i; show_arm = argus.arm
+    save_pddl = argus.p; save_gifs = argus.g; save_imgs = argus.i; show_arm = argus.arm; show_nav = argus.nav
     if argus.o is not None:
         N_obs = argus.o
     else:
         N_obs = random.randint(5, 20)
+    path = CreateOutputFolder(save_imgs,save_gifs,save_pddl)
 
     print("** Starting the Ignorance simulation **\n")
-    path = CreateOutputFolder(save_imgs,save_gifs,save_pddl)
-    map = Map()
-    obs = Create_Obstacles(N_obs)
-    goals = Create_Goal_Zones(N_goals, obs)
-    start = Create_Start_Node(obs, goals)
-    
-    samples, goal_nodes = Create_Samples(map, start, obs, goals, N_samples=N_samples)
-    roadmap, PRM_graph = Create_Roadmap(samples, obs, N_knn=5)
-    new_graph, trajectories = PRM_Solve(start, goals, samples, goal_nodes, roadmap, PRM_graph)
-    final_trajectory = TaskPlanner(new_graph, save_pddl=save_pddl, output_path=path).GetFinalTrajectory()
-    if final_trajectory == None:
-        return
+    if show_nav:
+        map = Map()
+        obs = Create_Obstacles(N_obs)
+        goals = Create_Goal_Zones(N_goals, obs)
+        start = Create_Start_Node(obs, goals)
         
-    plotter = Plotter(map, obs, goals, start, samples, roadmap, PRM_graph, new_graph, trajectories, final_trajectory, output_path=path, save_img=save_imgs, save_gif=save_gifs, show_anim=show_animation)
-    if show_animation or show_knn or save_gifs: 
-        plotter.plot_init()
-        plotter.plot_PRM()
-        if show_knn:
-            plotter.plot_knn()
-        plotter.plot_Dijkstra()
-        plotter.Visualize_Final_Graph()
-    else:
-        plotter.plot4()
-    plotter.plot_final()
+        samples, goal_nodes = Create_Samples(map, start, obs, goals, N_samples=N_samples)
+        roadmap, PRM_graph = Create_Roadmap(samples, obs, N_knn=5)
+        new_graph, trajectories = PRM_Solve(start, goals, samples, goal_nodes, roadmap, PRM_graph)
+        final_trajectory = TaskPlanner(new_graph, save_pddl=save_pddl, output_path=path).GetFinalTrajectory()
+        if final_trajectory == None:
+            return
+            
+        plotter = Plotter(map, obs, goals, start, samples, roadmap, PRM_graph, new_graph, trajectories, final_trajectory, output_path=path, save_img=save_imgs, save_gif=save_gifs, show_anim=show_animation)
+        if show_animation or show_knn or save_gifs: 
+            plotter.plot_init()
+            plotter.plot_PRM()
+            if show_knn:
+                plotter.plot_knn()
+            plotter.plot_Dijkstra()
+            plotter.Visualize_Final_Graph()
+        else:
+            plotter.plot4()
+        plotter.plot_final()
 
     if show_arm:
         Arm_Run(output_path=path, save_img=save_imgs, save_gif=save_gifs, show_anim=show_animation)
@@ -120,12 +121,13 @@ def main():
 
 def options():
     parser = argparse.ArgumentParser(description="Integrated Task & Motion Planning for a Simplified Mars Rover Exploration Problem", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("-nav", dest='nav', required=False, default=True, help="Run the navigation simulation")
     parser.add_argument("-arm", dest='arm', required=False, default=True, help="Run the arm simulation")
     parser.add_argument("-n", dest='n', required=False, default=3, help="Number of goals to create")
-    parser.add_argument("-o", dest='o', required=False, default=None, help="Number of obstacles to create")
+    parser.add_argument("-o", dest='o', required=False, default=None, help="Number of obstacles to create (default will randomize the number of obstacles)")
     parser.add_argument("-s", dest='s', required=False, default=200, help="Number of samples for PRM")
     parser.add_argument("-a", dest='a', required=False, default=False, help="Show animations")
-    parser.add_argument("-k", dest='k', required=False, default=False, help="Plot the k-nearest neighbors animation")
+    parser.add_argument("-k", dest='k', required=False, default=False, help="Show the k-nearest neighbors animation")
     parser.add_argument("-p", dest='p', required=False, default=False, help="Save .pddl files")
     parser.add_argument("-i", dest='i', required=False, default=False, help="Save .png image files")
     parser.add_argument("-g", dest='g', required=False, default=False, help="Save .gif animation files")
