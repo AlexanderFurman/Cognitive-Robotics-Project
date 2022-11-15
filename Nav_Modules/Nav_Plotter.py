@@ -33,6 +33,8 @@ class Plotter:
         axis.set_ylim(0,self.map.height)
         axis.set_xlim(0,self.map.width)
         axis.set_title('Initial Map (C-Space)')
+        axis.set_ylabel('y [m]')
+        axis.set_xlabel('x [m]')
 
         # plotting the map, obstacles, and goal zones
         self.map.plot_rectangle(axis)
@@ -52,37 +54,58 @@ class Plotter:
         """
         Plots the map (.png or .gif) and shows the k-Nearest Neighbors of each node after the initial roadmap sampling (by default, this function is not used)
         """
-        self.fig, self.ax = plt.subplots()
-        self.ax.set_ylim(0,self.map.height)
-        self.ax.set_xlim(0,self.map.width)
-        self.ax.set_title('k-Nearest Neighbors Display')
+        _, axis = plt.subplots()
+        axis.set_ylim(0,self.map.height)
+        axis.set_xlim(0,self.map.width)
+        axis.set_title('k-Nearest Neighbors Display')
+        axis.set_ylabel('y [m]')
+        axis.set_xlabel('x [m]')
         
         # plotting the map, obstacles, and goal zones
-        self.map.plot_rectangle(self.ax)
+        self.map.plot_rectangle(axis)
         for o in self.obstacles:
-            o.plot_circle(self.ax)
+            o.plot_circle(axis)
         for g in self.goals:
-            g.plot_circle(self.ax)
+            g.plot_circle(axis)
 
         # plotting all the nodes (including the start and goal nodes)
         for s in self.samples:
-            s.plot_node(self.ax)
+            s.plot_node(axis)
+
+        if self.save_gif:
+            print("Producing kNN animation .gif...")
+            img_list = ['Output/Temp_Images/1.png']
+            plt.savefig('Output/Temp_Images/1.png')
 
         # plotting neighbors
         i = 0
-        for key in self.PRM_graph.graph:
-            key.plot_node(self.ax, color='yellow')
-            xlabel_string = 'kNN Check: ' + str(i+1) + ' / ' + str(len(self.PRM_graph.graph))
-            self.ax.set_xlabel(xlabel_string)
+        for idx_k, key in enumerate(self.PRM_graph.graph):
+            key.plot_node(axis, color='yellow')
+            xlabel_string = 'kNN Check: ' + str(idx_k+1) + ' / ' + str(len(self.PRM_graph.graph))
+            axis.set_xlabel(xlabel_string)
             i += 1
-            plt.pause(0.001)
+            if self.save_gif:
+                img_list.append('Output/Temp_Images/' + str(i) + '.png')
+                plt.savefig('Output/Temp_Images/' + str(i) + '.png')
+            if self.show_anim:
+                plt.pause(0.001)
             for n in self.PRM_graph.graph[key]:
-                n.plot_node(self.ax, color='orange')
-            plt.pause(0.001)
+                n.plot_node(axis, color='orange')
+            i += 1
+            if self.save_gif:
+                img_list.append('Output/Temp_Images/' + str(i) + '.png')
+                plt.savefig('Output/Temp_Images/' + str(i) + '.png')
+            if self.show_anim:
+                plt.pause(0.001)
 
-        plt.show()
-        if self.save_img:
-            plt.savefig(self.output_path+'kNN.png')
+        if self.show_anim:
+            plt.show()
+        if self.save_gif:
+            for j in range(0,10):
+                img_list.append('Output/Temp_Images/' + str(i+j) + '.png')
+                shutil.copyfile('Output/Temp_Images/' + str(i+j) + '.png', 'Output/Temp_Images/' + str(i+j+1) + '.png')
+            Create_GIF(img_list, "kNN_Animation", self.output_path)
+            print("\t...Done")
         return
 
     def plot_PRM(self, axis=None):
@@ -95,6 +118,8 @@ class Plotter:
         axis.set_ylim(0,self.map.height)
         axis.set_xlim(0,self.map.width)
         axis.set_title('Probabilistic Roadmap')
+        axis.set_ylabel('y [m]')
+        axis.set_xlabel('x [m]')
 
         # plotting the map, obstacles, and goal zones
         self.map.plot_rectangle(axis)
@@ -111,7 +136,7 @@ class Plotter:
         # plotting all the nodes (including the start and goal nodes)
         for idx_s, s in enumerate(self.samples):
             s.plot_node(axis)
-            xlabel_string = 'Nodes: ' + str(idx_s+1) + ' / ' + str(len(self.samples))
+            xlabel_string = 'x [m]       Nodes: ' + str(idx_s+1) + ' / ' + str(len(self.samples))
             axis.set_xlabel(xlabel_string)
             if len(self.samples) < 100:
                 if self.save_gif:
@@ -155,7 +180,7 @@ class Plotter:
                         plt.pause(0.001)
             elif len(self.roadmap) >= 1000:
                 if idx_e == len(self.roadmap) - 1:
-                    axis.set_xlabel(xlabel_string_new + ', Plotting Complete!')   
+                    axis.set_xlabel(xlabel_string_new )#+ ', Plotting Complete!')   
                 if idx_e % 200 == 0 or idx_e == len(self.roadmap) - 1:
                     if self.save_gif:
                         img_list.append('Output/Temp_Images/' + str(10+idx_s+idx_e) + '.png')
@@ -188,6 +213,8 @@ class Plotter:
             axis.set_title('Dijkstra Paths between Critical Nodes')
         else:
             axis.set_title('PRM with Dijkstra Paths')
+        axis.set_ylabel('y [m]')
+        axis.set_xlabel('x [m]')
 
         # plotting the map, obstacles, and goal zones
         self.map.plot_rectangle(axis)
@@ -209,9 +236,9 @@ class Plotter:
         count = 0
         # plotting the solution trajectories (including the start and goal nodes)
         for idx_t, traj in enumerate(self.trajectories):
-            xlabel_string = 'Trajectories: ' + str(idx_t+1) + ' / ' + str(len(self.trajectories))
+            xlabel_string = 'x [m]       Trajectories: ' + str(idx_t+1) + ' / ' + str(len(self.trajectories))
             if idx_t == len(self.trajectories) - 1:
-                axis.set_xlabel(xlabel_string + ', Plotting Complete!') 
+                axis.set_xlabel(xlabel_string)# + ', Plotting Complete!') 
             else:
                 axis.set_xlabel(xlabel_string)
             for o in traj:
@@ -293,6 +320,8 @@ class Plotter:
         axis.set_ylim(0,self.map.height)
         axis.set_xlim(0,self.map.width)
         axis.set_title('Final C-Space Trajectory for the Mars Rover')
+        axis.set_ylabel('y [m]')
+        axis.set_xlabel('x [m]')
 
         # plotting the map, obstacles, and goal zones
         self.map.plot_rectangle(axis)
@@ -310,7 +339,7 @@ class Plotter:
         node_count = 0
         # plotting the solution trajectories (including the start and goal nodes)
         for idx_t, traj in enumerate(self.final_traj):
-            xlabel_string = 'Trajectories: ' + str(idx_t+1) + ' / ' + str(len(self.final_traj))
+            xlabel_string = 'x [m]       Trajectories: ' + str(idx_t+1) + ' / ' + str(len(self.final_traj))
             axis.set_xlabel(xlabel_string)
             traj_count += 1
 
@@ -324,10 +353,10 @@ class Plotter:
                 elif isinstance(o,Edge):
                     o.plot_edge(axis, color=((255-(30*idx_t))/255, (255-(30*idx_t))/255, 0))
                 if (idx_t == len(self.final_traj) - 1) and (idx_o == len(traj) - 1):
-                    axis.set_xlabel(xlabel_string + ', Plotting Complete!') 
+                    axis.set_xlabel(xlabel_string)# + ', Plotting Complete!') 
                 if self.save_gif:
                     img_list.append('Output/Temp_Images/' + str(node_count) + '.png')
-                    plt.savefig('Output/Temp_Images/' + str(1+node_count) + '.png')
+                    plt.savefig('Output/Temp_Images/' + str(node_count) + '.png')
                 plt.pause(0.1)
             plt.pause(0.01)
 
@@ -335,8 +364,8 @@ class Plotter:
             plt.savefig(self.output_path+'Final_Map.png')
         if self.save_gif:
             for j in range(1,15):
-                img_list.append('Output/Temp_Images/' + str(1+node_count+j) + '.png')
-                shutil.copyfile('Output/Temp_Images/' + str(1+node_count) + '.png', 'Output/Temp_Images/' + str(1+node_count+j) + '.png')
+                img_list.append('Output/Temp_Images/' + str(node_count+j) + '.png')
+                shutil.copyfile('Output/Temp_Images/' + str(node_count) + '.png', 'Output/Temp_Images/' + str(node_count+j) + '.png')
             Create_GIF(img_list, "Final_Trajectory_Animation", self.output_path)
             print("\t...Done\n")
         plt.show()

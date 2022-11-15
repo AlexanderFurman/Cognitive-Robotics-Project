@@ -18,7 +18,6 @@ class Plotter:
         self.robot = environment.robot
         self.obstacles = environment.obstacles
         self.targets = environment.targets
-        #self.fig, self.ax = plt.subplots() ?
         self.gripper_positions = []
         self.frames= []
         self.collision_in_frame = []
@@ -98,8 +97,10 @@ class Plotter:
             plt.plot(root_vals[0], root_vals[1], color='g', markersize = 5)
             for node in reversed(path):
                 self.connect_parent_and_child(node, 'g', 5)
+       
         plt.title("RRT C-Space")
-        plt.xlabel(f"{len(nodes)} Nodes Generated Until Solution")
+        plt.xlabel(f"Theta 1 [rad]       {len(nodes)} Nodes Generated Until Solution")
+        plt.ylabel("Theta 2 [rad]")
         if self.save_img:
             name = self.output_path + "RRT_C-Space.png"
             plt.savefig(name)
@@ -117,6 +118,8 @@ class Plotter:
         root_vals = root_node.vectorized_values()
         plt.plot(root_vals[0], root_vals[1], 0.05, color='grey')
         plt.title("RRT Algorithm in the Arm's C-Space")
+        plt.xlabel("Theta 1 [rad]")
+        plt.ylabel("Theta 2 [rad]")
         if self.save_gif:
             print("Producing RRT animation .gif...")
             img_list = ['Output/Temp_Images/1.png']
@@ -125,7 +128,7 @@ class Plotter:
         for (node, sample_node, nearest_node) in zip(nodes, sample_nodes, nearest_nodes):
             idx = nodes.index(node)+1
 
-            xlabel_string = 'Nodes: ' + str(idx) + ' / ' + str(len(nodes))
+            xlabel_string = 'Theta 1 [rad]       Nodes: ' + str(idx) + ' / ' + str(len(nodes))
             self.ax.set_xlabel(xlabel_string)
             
             sample_vec = sample_node.vectorized_values()
@@ -285,7 +288,7 @@ class Plotter:
 
         self.ax.set_title("Final Rover Arm Motion (W-Space)")
         self.ax.set_xlabel("x [dm]")
-        self.ax.set_ylabel("y [dm]")
+        self.ax.set_ylabel("z [dm]")
         self.ax.plot(self.gripper_positions[i][0], self.gripper_positions[i][1], marker='o', color='purple', markersize = 10)
         return
        
